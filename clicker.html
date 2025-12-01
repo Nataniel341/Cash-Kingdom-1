@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Cash Kingdom — Turbo Edition</title>
+<style>
+:root{
+  --bg:#0e0e18;
+  --card:#11111f;
+  --accent:#37ff9a;
+  --accent2:#5ecbff;
+  --muted:#a3b0c6;
+  --danger:#ff5f7e;
+}
+*{box-sizing:border-box;font-family:Inter,Segoe UI,Roboto,Arial}
+html,body{height:100%;margin:0;background:radial-gradient(circle at 50% 0%,#1b1b2f 0%,#0d0d17 70%);color:#eef3ff;overflow-x:hidden}
+.app{max-width:1200px;margin:20px auto;padding:20px;display:grid;grid-template-columns:1fr 360px;gap:22px}
+.header{grid-column:1/3;display:flex;justify-content:space-between;align-items:center}
+.title{font-size:30px;font-weight:800;display:flex;gap:12px;align-items:center;color:var(--accent)}
+.title img{width:42px;height:42px;filter:drop-shadow(0 0 8px var(--accent));}
+.card{background:rgba(255,255,255,0.03);backdrop-filter:blur(5px);border-radius:16px;padding:18px;box-shadow:0 6px 25px rgba(0,0,0,0.6)}
+.centerCol{display:flex;flex-direction:column;align-items:center;gap:20px}
+#dollarBtn{width:260px;height:260px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle,#fff 0%,#d4ffe0 30%,#37ff9a 80%);cursor:pointer;position:relative;box-shadow:0 0 25px #37ff9a,0 0 60px #25c97c inset;transition:0.15s}
+#dollarBtn:hover{transform:scale(1.04);}
+#dollarBtn img{width:130px;height:130px;filter:drop-shadow(0 0 12px #0f0);}
+.clickAnim{animation:pop .3s}
+@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.1)}100%{transform:scale(1)}}
+.stats{display:flex;gap:14px}
+.stat{padding:12px 14px;border-radius:12px;background:rgba(255,255,255,0.06);min-width:150px;text-align:center;box-shadow:0 0 12px rgba(0,0,0,0.25)}
+.stat div:first-child{font-size:20px;font-weight:700;color:var(--accent)}
+.tabs{display:flex;gap:8px;margin-top:10px}
+.tab{padding:10px 14px;border-radius:10px;background:rgba(255,255,255,0.04);cursor:pointer}
+.tab.active{background:linear-gradient(45deg,var(--accent),var(--accent2));color:#000;font-weight:700}
+.upgradeList{display:grid;gap:10px;margin-top:14px}
+.upgrade{display:flex;justify-content:space-between;padding:14px;border-radius:12px;background:rgba(255,255,255,0.04);align-items:center}
+.btn{padding:8px 14px;border-radius:8px;background:linear-gradient(45deg,var(--accent2),var(--accent));cursor:pointer;color:#000;font-weight:700;box-shadow:0 0 10px var(--accent2)}
+.btn:active{transform:scale(0.97)}
+.small{font-size:13px;color:var(--muted)}
+.petsRow{display:flex;gap:12px;flex-wrap:wrap}
+.pet{width:80px;height:80px;border-radius:14px;background:#fff3;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.2s;position:relative;overflow:hidden}
+.pet img{width:58px;height:58px;transition:.3s}
+.pet:hover{transform:scale(1.08)}
+.pet.animRotate img{animation:spin 3s linear infinite}
+@keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+.bgPreview{height:130px;border-radius:12px;background-size:cover;background-position:center;box-shadow:0 0 18px rgba(0,0,0,0.4)}
+.toast{position:fixed;right:20px;bottom:20px;padding:12px 16px;border-radius:12px;background:#111;color:#fff;font-weight:600;display:none;box-shadow:0 0 20px #000}
+.rebirth{background:linear-gradient(45deg,#d24bff,#8b2cff);color:#fff;padding:10px 16px;border-radius:10px;font-weight:800;cursor:pointer;box-shadow:0 0 14px #d24bff}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="title"><img src="https://cdn-icons-png.flaticon.com/512/138/138292.png">Cash Kingdom — Turbo Edition</div>
+    <div class="small">Autosave • Turbo Upgrades • Pet Buff Overhaul</div>
+  </div>
+
+  <div class="card centerCol">
+    <div id="dollarBtn"><img id="dollarImg" src="https://cdn-icons-png.flaticon.com/512/625/625595.png"></div>
+
+    <div class="stats">
+      <div class="stat"><div id="money">$0</div><div class="small">Kasa</div></div>
+      <div class="stat"><div id="perClick">1</div><div class="small">Za klik</div></div>
+      <div class="stat"><div id="mult">1×</div><div class="small">Mnożnik</div></div>
+      <div class="stat"><div id="auto">0/s</div><div class="small">AutoClick</div></div>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" data-tab="upgrades">Upgrades</div>
+      <div class="tab" data-tab="pets">Pety</div>
+      <div class="tab" data-tab="backgrounds">Tła</div>
+      <div class="tab" data-tab="rebirth">Rebirth</div>
+    </div>
+
+    <div id="tabContent"></div>
+  </div>
+
+  <div class="card">
+    <strong>Pety aktywne</strong>
+    <div class="petsRow" id="petPreview"></div>
+  </div>
+
+  <div class="card">
+    <strong>Podgląd tła</strong>
+    <div id="bgPreview" class="bgPreview"></div>
+  </div>
+
+</div>
+<div id="toast" class="toast"></div>
+
+<script>
+const STATE_KEY="cashkingdom_turbo_v1";
+let state={
+  money:0,
+  lifetime:0,
+  upgrades:{
+    click:{level:0,cost:15,add:1},
+    mult:{level:0,cost:120,add:0.25},
+    auto:{level:0,cost:200,add:0.5},
+    hyper:{level:0,cost:5000,add:2},
+    giga:{level:0,cost:80000,add:5}
+  },
+  pets:{rabbit:false,frog:false,cat:false,dragon:false,unicorn:false},
+  backgrounds:{sea:false,candy:false,hell:false},
+  rebirths:0
+};
+
+function fmt(n){return n>=1e9?(n/1e9).toFixed(2)+"B":n>=1e6?(n/1e6).toFixed(2)+"M":n>=1e3?(n/1e3).toFixed(1)+"k":Math.floor(n);} 
+function toast(t){const el=document.getElementById("toast");el.innerText=t;el.style.display="block";clearTimeout(el._t);el._t=setTimeout(()=>el.style.display="none",1800);} 
+
+// PET DEFINITIONS — BUFFED STRONGLY
+const PETS={
+  rabbit:{name:"Królik Turbo",cost:2000,mult:0.5,icon:"🐰"},
+  frog:{name:"Żaba Mutant",cost:15000,mult:1.2,icon:"🐸"},
+  cat:{name:"Kot Alfa",cost:80000,mult:2.5,icon:"🐱"},
+  dragon:{name:"Smok",cost:500000,mult:12,icon:"🐉"},
+  unicorn:{name:"Jednorożec",cost:1500000,mult:25,icon:"🦄"}
+};
+
+// BACKGROUNDS
+const BGS={
+  sea:{name:"Atlantyda+",cost:50000,mult:0.15,css:"linear-gradient(180deg,#003,#06f)"},
+  candy:{name:"Kraina Cukru+",cost:250000,mult:0.35,css:"linear-gradient(180deg,#f9c,#f6f)"},
+  hell:{name:"Piekielny Tron",cost:2000000,mult:1.0,css:"linear-gradient(180deg,#900,#300)"}
+};
+
+function getMult(){
+  let m=1 + state.upgrades.mult.level*0.25 + state.upgrades.hyper.level*2 + state.upgrades.giga.level*5;
+  for(const p in state.pets) if(state.pets[p]) m+=PETS[p].mult;
+  for(const b in state.backgrounds) if(state.backgrounds[b]) m+=BGS[b].mult;
+  m+=state.rebirths*0.25;
+  return m;
+}
+
+function getPerClick(){return (1 + state.upgrades.click.level*1)*getMult();}
+function getAuto(){return (state.upgrades.auto.level*0.5)*getMult();}
+
+function earn(x){state.money+=x;state.lifetime+=x;updateUI();saveDebounced();}
+
+// UI
+const tabContent=document.getElementById("tabContent");
+
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
+  document.querySelectorAll('.tab').forEach(a=>a.classList.remove('active'));t.classList.add('active');renderTab(t.dataset.tab);
+}));
+
+function renderTab(t){
+  if(t==="upgrades") renderUpgrades();
+  if(t==="pets") renderPets();
+  if(t==="backgrounds") renderBackgrounds();
+  if(t==="rebirth") renderRebirth();
+}
+
+function renderUpgrades(){
+  tabContent.innerHTML="";
+  const wrap=document.createElement('div');wrap.className='upgradeList';
+  for(const key in state.upgrades){
+    const u=state.upgrades[key];
+    const el=document.createElement('div');el.className='upgrade';
+    el.innerHTML=`<div><strong>${key.toUpperCase()}</strong><div class='small'>Poziom ${u.level} • +${u.add} per lvl</div></div><div><div class='small'>Koszt: $${fmt(u.cost)}</div><button class='btn' data-id='${key}'>Kup</button></div>`;
+    wrap.appendChild(el);
+  }
+  tabContent.appendChild(wrap);
+  wrap.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>buyUpgrade(b.dataset.id)));
+}
+
+function buyUpgrade(key){
+  const u=state.upgrades[key];
+  if(state.money>=u.cost){
+    state.money-=u.cost;
+    u.level++;
+    u.cost=Math.ceil(u.cost*1.85);
+    toast("Kupiono "+key);
+    updateUI();
+    saveState();
+    renderUpgrades();
+  } else toast("Za malo kasy");
+}
+
+function renderPets(){
+  tabContent.innerHTML="";
+  const wrap=document.createElement('div');wrap.className='upgradeList';
+  for(const id in PETS){
+    const p=PETS[id];
+    const el=document.createElement('div');el.className='upgrade';
+    el.innerHTML=`<div><strong>${p.name}</strong><div class='small'>+${p.mult}×</div></div><div><div class='small'>Koszt: $${fmt(p.cost)}</div><button class='btn' data-id='${id}'>Kup</button></div>`;
+    wrap.appendChild(el);
+  }
+  tabContent.appendChild(wrap);
+  wrap.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>buyPet(b.dataset.id)));
+}
+
+function buyPet(id){
+  if(state.pets[id]) return toast("Masz już");
+  if(state.money>=PETS[id].cost){state.money-=PETS[id].cost;state.pets[id]=true;updateUI();toast("Kupiono peta")}else toast("Za mało kasy");
+}
+
+function renderBackgrounds(){
+  tabContent.innerHTML="";
+  const wrap=document.createElement('div');wrap.className='upgradeList';
+  for(const id in BGS){
+    const b=BGS[id];
+    const el=document.createElement('div');el.className='upgrade';
+    el.innerHTML=`<div><strong>${b.name}</strong><div class='small'>+${b.mult}×</div></div><div><div class='small'>Koszt: $${fmt(b.cost)}</div><button class='btn' data-id='${id}'>Kup</button></div>`;
+    wrap.appendChild(el);
+  }
+  tabContent.appendChild(wrap);
+  wrap.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>buyBG(b.dataset.id)));
+}
+
+function buyBG(id){
+  if(state.money>=BGS[id].cost){
+    for(const k in state.backgrounds) state.backgrounds[k]=false;
+    state.money-=BGS[id].cost;state.backgrounds[id]=true;
+    updateUI();toast("Tło ustawiono!")
+  }else toast("Nie stać cię");
+}
+
+function renderRebirth(){
+  tabContent.innerHTML="";
+  const box=document.createElement('div');box.className='upgradeList';
+  const el=document.createElement('div');el.className='upgrade';
+  el.innerHTML=`<div><strong>Rebirth</strong><div class='small'>Po 10M lifetime</div></div><div><button class='rebirth' id='doRebirth'>Rebirth</button></div>`;
+  box.appendChild(el);
+  tabContent.appendChild(box);
+  document.getElementById('doRebirth').onclick=rebirth;
+}
+
+function rebirth(){
+  if(state.lifetime<10_000_000) return toast("Musisz zarobić 10M");
+  state.rebirths++;
+  state.money=0;state.lifetime=0;
+  state.upgrades={click:{level:0,cost:15,add:1},mult:{level:0,cost:120,add:0.25},auto:{level:0,cost:200,add:0.5},hyper:{level:0,cost:5000,add:2},giga:{level:0,cost:80000,add:5}};
+  state.pets={rabbit:false,frog:false,cat:false,dragon:false,unicorn:false};
+  state.backgrounds={sea:false,candy:false,hell:false};
+  toast("Rebirth wykonany!");updateUI();saveState();
+}
+
+function updateUI(){
+  document.getElementById('money').innerText="$"+fmt(state.money);
+  document.getElementById('perClick').innerText=fmt(getPerClick());
+  document.getElementById('mult').innerText=getMult().toFixed(2)+"×";
+  document.getElementById('auto').innerText=fmt(getAuto())+"/s";
+  const pv=document.getElementById('petPreview');pv.innerHTML="";
+  for(const id in state.pets) if(state.pets[id]){
+    const el=document.createElement('div');el.className='pet animRotate';el.innerHTML=`<img src='https://twemoji.maxcdn.com/v/latest/svg/${PETS[id].icon.codePointAt(0).toString(16)}.svg'>`;
+    pv.appendChild(el);
+  }
+  let bg='linear-gradient(180deg,#111,#000)';
+  for(const id in state.backgrounds) if(state.backgrounds[id]) bg=BGS[id].css;
+  document.getElementById('bgPreview').style.background=bg;
+}
+
+// Save
+function saveState(){localStorage.setItem(STATE_KEY,JSON.stringify(state));}
+let timer=null;function saveDebounced(){clearTimeout(timer);timer=setTimeout(saveState,600);} 
+
+function loadState(){
+  const raw=localStorage.getItem(STATE_KEY);if(!raw)return;
+  try{state=Object.assign(state,JSON.parse(raw));}catch{}
+}
+
+loadState();updateUI();renderTab('upgrades');
+
+// CLICK
+const btn=document.getElementById('dollarBtn');
+btn.onclick=()=>{
+  const amt=getPerClick();
+  earn(amt);
+  btn.classList.add('clickAnim');setTimeout(()=>btn.classList.remove('clickAnim'),300);
+}
+
+// AUTOCOLLECT
+setInterval(()=>earn(getAuto()),1000);
+</script>
+</body>
+</html>
