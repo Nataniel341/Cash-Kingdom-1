@@ -3,112 +3,633 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Cash Kingdom — Turbo Edition</title>
+<title>Cash Kingdom — Turbo Edition v2</title>
 <style>
+/* --- GŁÓWNY STYL --- */
 :root{
-  --bg:#0e0e18;
-  --card:#11111f;
-  --accent:#37ff9a;
-  --accent2:#5ecbff;
-  --muted:#a3b0c6;
-  --danger:#ff5f7e;
+  --bg: #0e0e18;
+  --card: #161625; /* Nieco jaśniejszy od tła */
+  --accent: #37ff9a;
+  --accent2: #5ecbff;
+  --muted: #a3b0c6;
+  --danger: #ff5f7e;
+  --gold: #ffd700;
 }
-*{box-sizing:border-box;font-family:Inter,Segoe UI,Roboto,Arial}
-html,body{height:100%;margin:0;overflow:hidden;}
-body{transition:background 0.5s ease; position:relative;}
-.app{max-width:1200px;margin:20px auto;padding:20px;display:grid;grid-template-columns:1fr 360px;gap:22px;position:relative;z-index:2;}
-.header{grid-column:1/3;display:flex;justify-content:space-between;align-items:center}
-.title{font-size:30px;font-weight:800;display:flex;gap:12px;align-items:center;color:var(--accent)}
-.title img{width:42px;height:42px;filter:drop-shadow(0 0 8px var(--accent));}
-.card{background:rgba(255,255,255,0.03);backdrop-filter:blur(5px);border-radius:16px;padding:18px;box-shadow:0 6px 25px rgba(0,0,0,0.6);position:relative;z-index:2}
-.centerCol{display:flex;flex-direction:column;align-items:center;gap:20px}
-#dollarBtn{width:260px;height:260px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle,#fff 0%,#d4ffe0 30%,#37ff9a 80%);cursor:pointer;position:relative;box-shadow:0 0 25px #37ff9a,0 0 60px #25c97c inset;transition:0.15s;z-index:2}
-#dollarBtn:hover{transform:scale(1.04);}
-#dollarBtn img{width:130px;height:130px;filter:drop-shadow(0 0 12px #0f0);}
-.clickAnim{animation:pop .3s}
-@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.1)}100%{transform:scale(1)}}
-.stats{display:flex;gap:14px}
-.stat{padding:12px 14px;border-radius:12px;background:rgba(255,255,255,0.06);min-width:150px;text-align:center;box-shadow:0 0 12px rgba(0,0,0,0.25)}
-.stat div:first-child{font-size:20px;font-weight:700;color:var(--accent)}
-.tabs{display:flex;gap:8px;margin-top:10px}
-.tab{padding:10px 14px;border-radius:10px;background:rgba(255,255,255,0.04);cursor:pointer}
-.tab.active{background:linear-gradient(45deg,var(--accent),var(--accent2));color:#000;font-weight:700}
-.upgradeList{display:grid;gap:10px;margin-top:14px}
-.upgrade{display:flex;justify-content:space-between;padding:14px;border-radius:12px;background:rgba(255,255,255,0.04);align-items:center}
-.btn{padding:8px 14px;border-radius:8px;background:linear-gradient(45deg,var(--accent2),var(--accent));cursor:pointer;color:#000;font-weight:700;box-shadow:0 0 10px var(--accent2)}
-.btn:active{transform:scale(0.97)}
-.small{font-size:13px;color:var(--muted)}
-.petsRow{display:flex;gap:12px;flex-wrap:wrap}
-.pet{width:80px;height:80px;border-radius:14px;background:#fff3;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.2s;position:relative;overflow:hidden;}
-.pet img{width:58px;height:58px;transition:.3s}
-.pet:hover{transform:scale(1.08)}
-.pet.animRotate img{animation:spin 3s linear infinite}
-@keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
-.toast{position:fixed;right:20px;bottom:20px;padding:12px 16px;border-radius:12px;background:#111;color:#fff;font-weight:600;display:none;box-shadow:0 0 20px #000;z-index:3}
-.rebirth{background:linear-gradient(45deg,#d24bff,#8b2cff);color:#fff;padding:10px 16px;border-radius:10px;font-weight:800;cursor:pointer;box-shadow:0 0 14px #d24bff}
-.flyingCandy{position:absolute;width:30px;height:30px;animation:flyCandy 5s linear infinite;z-index:1;}
-@keyframes flyCandy{0%{transform:translate(0,0) rotate(0deg);}50%{transform:translate(800px,200px) rotate(180deg);}100%{transform:translate(0,0) rotate(360deg);}}
-.bankAnim{position:absolute;width:100px;height:100px;background:url('https://i.ibb.co/bank.png') no-repeat center/contain;animation:bankMove 8s linear infinite;z-index:1;}
-@keyframes bankMove{0%{top:0;left:10%;}25%{top:50px;left:40%;}50%{top:100px;left:70%;}75%{top:50px;left:30%;}100%{top:0;left:10%;}}
+*{box-sizing:border-box;font-family:'Segoe UI', Inter, Roboto, sans-serif; user-select: none;}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  color: #fff;
+}
+
+body {
+  background-color: var(--bg);
+  background-position: center center;
+  background-size: cover; /* Tło na cały ekran */
+  background-attachment: fixed; /* Tło nie przesuwa się */
+  background-repeat: no-repeat;
+  transition: background-image 0.5s ease;
+}
+
+/* Ciemna nakładka, żeby tekst był czytelny na jasnych tłach */
+#backgroundOverlay {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.4); 
+  z-index: 1;
+  pointer-events: none;
+}
+
+.app {
+  max-width: 1100px;
+  height: 95vh;
+  margin: 2vh auto;
+  padding: 0 20px;
+  display: grid;
+  grid-template-columns: 1fr 380px; /* Panel gry | Sklep */
+  grid-template-rows: auto 1fr auto;
+  gap: 20px;
+  position: relative;
+  z-index: 2;
+}
+
+/* --- HEADER --- */
+.header {
+  grid-column: 1 / 3;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(10px);
+  padding: 15px 25px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.title { font-size: 24px; font-weight: 800; color: var(--accent); display: flex; align-items: center; gap: 10px; }
+.title img { width: 32px; }
+
+/* --- GŁÓWNY PANEL (Lewa strona) --- */
+.mainPanel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+}
+
+/* Wielki przycisk dolara */
+#dollarBtn {
+  width: 240px;
+  height: 240px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 30% 30%, #fff, #baffd3, #00c462);
+  cursor: pointer;
+  box-shadow: 0 0 40px rgba(55, 255, 154, 0.4), inset -10px -10px 20px rgba(0,0,0,0.2);
+  transition: transform 0.1s;
+  position: relative;
+}
+#dollarBtn:active { transform: scale(0.95); }
+#dollarBtn img { width: 140px; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3)); }
+
+/* Animacja kliknięcia */
+.pop { animation: popAnim 0.3s ease; }
+@keyframes popAnim { 50% { transform: scale(1.05); } }
+
+.statsRow {
+  display: flex;
+  gap: 15px;
+  width: 100%;
+  justify-content: center;
+}
+.statBox {
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(5px);
+  padding: 10px 20px;
+  border-radius: 12px;
+  text-align: center;
+  min-width: 100px;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+.statVal { font-size: 22px; font-weight: bold; color: var(--accent); }
+.statLabel { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+
+/* Sekcja Petów (Podgląd) */
+.activePetsArea {
+  grid-column: 1 / 3;
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding-bottom: 20px;
+}
+
+/* --- STYLIZACJA PETÓW (Nowa) --- */
+.petDisplay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  width: 90px;
+  animation: floatPet 3s ease-in-out infinite; /* Animacja lewitowania */
+}
+/* Każdy pet lewituje w nieco innym tempie */
+.petDisplay:nth-child(odd) { animation-duration: 3.5s; }
+.petDisplay:nth-child(even) { animation-duration: 4s; }
+
+@keyframes floatPet {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
+}
+
+.petIcon {
+  font-size: 60px;
+  filter: drop-shadow(0 0 15px rgba(255,255,255,0.4));
+  transition: transform 0.3s;
+}
+.petDisplay:hover .petIcon { transform: scale(1.2) rotate(10deg); }
+.petName { 
+  background: rgba(0,0,0,0.7); 
+  padding: 2px 8px; 
+  border-radius: 10px; 
+  font-size: 11px; 
+  margin-top: 5px;
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+/* --- PANEL SKLEPU (Prawa strona) --- */
+.shopPanel {
+  background: rgba(22, 22, 37, 0.95);
+  border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+  border: 1px solid rgba(255,255,255,0.05);
+  overflow: hidden;
+}
+
+.tabs { display: flex; gap: 5px; background: #0b0b14; padding: 5px; border-radius: 12px; }
+.tab { 
+  flex: 1; 
+  text-align: center; 
+  padding: 10px; 
+  font-size: 13px; 
+  border-radius: 8px; 
+  cursor: pointer; 
+  color: var(--muted);
+  transition: 0.2s;
+}
+.tab:hover { background: rgba(255,255,255,0.05); }
+.tab.active { background: var(--accent); color: #000; font-weight: bold; box-shadow: 0 0 10px var(--accent); }
+
+#shopContent {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-right: 5px; /* miejsce na scrollbar */
+}
+/* Pasek przewijania */
+#shopContent::-webkit-scrollbar { width: 6px; }
+#shopContent::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+
+/* Karta produktu */
+.shopItem {
+  background: rgba(255,255,255,0.03);
+  padding: 12px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid transparent;
+  transition: 0.2s;
+}
+.shopItem:hover { border-color: rgba(255,255,255,0.1); background: rgba(255,255,255,0.06); }
+
+.itemInfo { display: flex; flex-direction: column; }
+.itemName { font-weight: bold; color: #fff; font-size: 15px; }
+.itemDesc { font-size: 12px; color: var(--muted); }
+.itemBonus { color: var(--accent2); font-size: 12px; }
+
+.buyBtn {
+  background: linear-gradient(45deg, var(--accent2), var(--accent));
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  color: #000;
+  font-size: 13px;
+  min-width: 80px;
+  transition: 0.2s;
+  box-shadow: 0 4px 10px rgba(55, 255, 154, 0.2);
+}
+.buyBtn:active { transform: scale(0.95); }
+
+/* Styl dla kupionego przedmiotu */
+.buyBtn.owned {
+  background: #333;
+  color: #777;
+  cursor: default;
+  box-shadow: none;
+  pointer-events: none;
+}
+.buyBtn.locked {
+  background: #333;
+  color: #aaa;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Toast (Powiadomienia) */
+.toast {
+  position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+  background: #222; border: 1px solid #444; color: #fff;
+  padding: 10px 20px; border-radius: 30px;
+  font-size: 14px; opacity: 0; pointer-events: none; transition: 0.3s; z-index: 100;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+.toast.show { opacity: 1; bottom: 50px; }
+
 </style>
 </head>
 <body>
-<div id="backgroundLayer"></div>
+
+<div id="backgroundOverlay"></div>
+
 <div class="app">
   <div class="header">
-    <div class="title"><img src="https://cdn-icons-png.flaticon.com/512/138/138292.png">Cash Kingdom — Turbo Edition</div>
-    <div class="small">Autosave • Turbo Upgrades • Pet Buff Overhaul</div>
+    <div class="title">
+      <img src="https://cdn-icons-png.flaticon.com/512/138/138292.png" alt="logo">
+      Cash Kingdom <span style="font-weight:300; font-size:16px; margin-left:5px; opacity:0.7">Turbo Edition</span>
+    </div>
+    <div style="font-size:12px; color:var(--muted)">Autosave ON</div>
   </div>
 
-  <div class="card centerCol">
-    <div id="dollarBtn"><img id="dollarImg" src="https://cdn-icons-png.flaticon.com/512/625/625595.png"></div>
-
-    <div class="stats">
-      <div class="stat"><div id="money">$0</div><div class="small">Kasa</div></div>
-      <div class="stat"><div id="perClick">1</div><div class="small">Za klik</div></div>
-      <div class="stat"><div id="mult">1×</div><div class="small">Mnożnik</div></div>
-      <div class="stat"><div id="auto">0/s</div><div class="small">AutoClick</div></div>
+  <div class="mainPanel">
+    <div class="statsRow">
+      <div class="statBox"><div class="statVal" id="moneyDisplay">$0</div><div class="statLabel">Gotówka</div></div>
+      <div class="statBox"><div class="statVal" id="perClickDisplay">1</div><div class="statLabel">Za klik</div></div>
+      <div class="statBox"><div class="statVal" id="autoDisplay">0/s</div><div class="statLabel">Auto</div></div>
     </div>
 
+    <div id="dollarBtn"><img src="https://cdn-icons-png.flaticon.com/512/625/625595.png" alt="click"></div>
+  </div>
+
+  <div class="shopPanel">
     <div class="tabs">
-      <div class="tab active" data-tab="upgrades">Upgrades</div>
-      <div class="tab" data-tab="pets">Pety</div>
-      <div class="tab" data-tab="backgrounds">Tła</div>
-      <div class="tab" data-tab="rebirth">Rebirth</div>
+      <div class="tab active" onclick="setTab('upgrades')">Ulepszenia</div>
+      <div class="tab" onclick="setTab('pets')">Pety</div>
+      <div class="tab" onclick="setTab('backgrounds')">Tła</div>
     </div>
-
-    <div id="tabContent"></div>
+    <div id="shopContent">
+      </div>
   </div>
 
-  <div class="card">
-    <strong>Pety aktywne</strong>
-    <div class="petsRow" id="petPreview"></div>
+  <div class="activePetsArea" id="petsContainer">
+    <div style="color:rgba(255,255,255,0.1); font-style:italic;">Brak aktywnych petów...</div>
   </div>
 </div>
-<div id="toast" class="toast"></div>
+
+<div id="toast" class="toast">Zapisano grę!</div>
 
 <script>
-const STATE_KEY="cashkingdom_turbo_v3";
-let state={money:0,lifetime:0,upgrades:{click:{level:0,cost:15,add:1},mult:{level:0,cost:120,add:0.25},auto:{level:0,cost:200,add:1},hyper:{level:0,cost:5000,add:2},giga:{level:0,cost:80000,add:5}},pets:{rabbit:false,frog:false,cat:false,dragon:false,unicorn:false},backgrounds:{sea:false,candy:false,hell:false},rebirths:0};
+/* --- KONFIGURACJA DANYCH --- */
+const STATE_KEY = "cashkingdom_turbo_v4"; // Zmieniony klucz, by zresetować stary stan (v3)
 
-const PETS={rabbit:{name:"Królik Turbo",cost:2000,mult:0.5,icon:"🐰"},frog:{name:"Żaba Mutant",cost:15000,mult:1.2,icon:"🐸"},cat:{name:"Kot Alfa",cost:80000,mult:2.5,icon:"🐱"},dragon:{name:"Smok",cost:500000,mult:12,icon:"🐉"},unicorn:{name:"Jednorożec",cost:1500000,mult:25,icon:"🦄"}};
-const BGS={sea:{name:"Atlantyda+",cost:50000,mult:0.15,css:"url('https://i.ibb.co/atlantyda.jpg') no-repeat center center/cover"},candy:{name:"Kraina Cukru+",cost:250000,mult:0.35,css:"url('https://i.ibb.co/candyland.jpg') no-repeat center center/cover"},hell:{name:"Piekielny Tron",cost:2000000,mult:1.0,css:"linear-gradient(180deg,#900,#300)"}};
+// Domyślny stan
+let state = {
+  money: 0,
+  lifetime: 0,
+  upgrades: {
+    click: { level: 0, baseCost: 15, costMult: 1.5, add: 1, name: "Mocniejszy Klik" },
+    auto: { level: 0, baseCost: 100, costMult: 1.4, add: 1, name: "Auto Kliker" },
+    factory: { level: 0, baseCost: 1000, costMult: 1.6, add: 15, name: "Fabryka Monet" }
+  },
+  pets: {
+    rabbit: { owned: false },
+    frog:   { owned: false },
+    cat:    { owned: false },
+    dragon: { owned: false },
+    unicorn:{ owned: false }
+  },
+  backgrounds: {
+    base:   { owned: true }, // Domyślne
+    sea:    { owned: false },
+    candy:  { owned: false },
+    space:  { owned: false }
+  },
+  currentBg: 'base'
+};
 
-function getMult(){let m=1+state.upgrades.mult.level*0.25+state.upgrades.hyper.level*2+state.upgrades.giga.level*5;for(const p in state.pets) if(state.pets[p]) m+=PETS[p].mult;for(const b in state.backgrounds) if(state.backgrounds[b]) m+=BGS[b].mult;m+=state.rebirths*0.25;return m;}
-function getPerClick(){return (1+state.upgrades.click.level*1)*getMult();}
-function getAuto(){return (state.upgrades.auto.level*0.5)*getMult();}
-function earn(x){state.money+=x;state.lifetime+=x;updateUI();saveDebounced();}
+// Definicje obiektów (statyczne)
+const PETS_DATA = {
+  rabbit: { name: "Królik Turbo", cost: 2000, mult: 0.5, icon: "🐰", desc: "+50% do mnożnika" },
+  frog:   { name: "Żaba Mutant", cost: 15000, mult: 1.2, icon: "🐸", desc: "+120% do mnożnika" },
+  cat:    { name: "Kot Alfa", cost: 80000, mult: 2.5, icon: "🐱", desc: "x2.5 Mnożnik!" },
+  dragon: { name: "Smok", cost: 500000, mult: 8.0, icon: "🐉", desc: "Ogromny boost!" },
+  unicorn:{ name: "Jednorożec", cost: 2000000, mult: 20.0, icon: "🦄", desc: "Legenda" }
+};
 
-function updateBackground(){for(const id in state.backgrounds) if(state.backgrounds[id]){document.body.style.background=BGS[id].css;}}
-function spawnCandy(){const candy=document.createElement('div');candy.className='flyingCandy';candy.style.left=Math.random()*window.innerWidth+'px';candy.style.top=Math.random()*window.innerHeight+'px';candy.innerText='🍬';document.body.appendChild(candy);setTimeout(()=>candy.remove(),5000);}
-setInterval(spawnCandy,800);
+const BGS_DATA = {
+  base:  { name: "Ciemność", cost: 0, mult: 0, css: "#0e0e18" },
+  sea:   { name: "Atlantyda", cost: 50000, mult: 0.2, css: "url('https://images.unsplash.com/photo-1551099276-857508c2a33f?q=80&w=1920')"},
+  candy: { name: "Cukierkowo", cost: 250000, mult: 0.4, css: "url('https://images.unsplash.com/photo-1518552632230-149fa8a5c370?q=80&w=1920')"},
+  space: { name: "Kosmos", cost: 1000000, mult: 1.0, css: "url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=1920')"}
+};
 
-function spawnBank(){const bank=document.createElement('div');bank.className='bankAnim';document.body.appendChild(bank);setTimeout(()=>bank.remove(),8000);}
-setInterval(spawnBank,5000);
+let currentTab = 'upgrades';
 
-loadState();updateUI();renderTab('upgrades');updateBackground();
-const btn=document.getElementById('dollarBtn');btn.onclick=()=>{earn(getPerClick());btn.classList.add('clickAnim');setTimeout(()=>btn.classList.remove('clickAnim'),300);}
-setInterval(()=>earn(getAuto()),1000);
+/* --- LOGIKA GRY --- */
+
+function getMult() {
+  let m = 1;
+  // Bonus z petów
+  for(let p in state.pets) {
+    if(state.pets[p].owned) m += PETS_DATA[p].mult;
+  }
+  // Bonus z tła (tylko aktywnego? Nie, zazwyczaj w clickerach bonusy się sumują za posiadanie)
+  // Tutaj zrobimy tak: bonus daje TYLKO aktualnie wybrane tło LUB wszystkie posiadane.
+  // Zróbmy, że wszystkie POSIADANE tła dają bonus pasywny.
+  for(let b in state.backgrounds) {
+    if(state.backgrounds[b].owned && BGS_DATA[b].cost > 0) m += BGS_DATA[b].mult;
+  }
+  return m;
+}
+
+function getPerClick() {
+  let base = 1 + (state.upgrades.click.level * state.upgrades.click.add);
+  return base * getMult();
+}
+
+function getAuto() {
+  let base = (state.upgrades.auto.level * state.upgrades.auto.add) + 
+             (state.upgrades.factory.level * state.upgrades.factory.add);
+  return base * getMult();
+}
+
+function earn(amount) {
+  state.money += amount;
+  state.lifetime += amount;
+  updateUI();
+}
+
+/* --- ZARZĄDZANIE UI --- */
+
+function formatNum(num) {
+  if (num >= 1000000) return (num/1000000).toFixed(2) + "M";
+  if (num >= 1000) return (num/1000).toFixed(1) + "k";
+  return Math.floor(num);
+}
+
+function updateUI() {
+  document.getElementById('moneyDisplay').innerText = "$" + formatNum(state.money);
+  document.getElementById('perClickDisplay').innerText = formatNum(getPerClick());
+  document.getElementById('autoDisplay').innerText = formatNum(getAuto()) + "/s";
+  
+  // Odśwież sklep tylko jeśli coś kupujemy (można zoptymalizować, ale przy tej skali ok)
+  renderShop(); 
+}
+
+/* --- SYSTEM SKLEPU --- */
+
+function setTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll(`.tab[onclick="setTab('${tab}')"]`).forEach(t => t.classList.add('active'));
+  renderShop();
+}
+
+function renderShop() {
+  const container = document.getElementById('shopContent');
+  container.innerHTML = "";
+
+  if (currentTab === 'upgrades') {
+    for (let key in state.upgrades) {
+      const upg = state.upgrades[key];
+      const cost = Math.floor(upg.baseCost * Math.pow(upg.costMult, upg.level));
+      
+      const div = document.createElement('div');
+      div.className = 'shopItem';
+      div.innerHTML = `
+        <div class="itemInfo">
+          <div class="itemName">${upg.name} <span style="font-size:11px; opacity:0.6">Lvl ${upg.level}</span></div>
+          <div class="itemDesc">+${upg.add} bazowej mocy</div>
+        </div>
+        <button class="buyBtn ${state.money < cost ? 'locked' : ''}" onclick="buyUpgrade('${key}')">$${formatNum(cost)}</button>
+      `;
+      container.appendChild(div);
+    }
+  } 
+  
+  else if (currentTab === 'pets') {
+    for (let key in PETS_DATA) {
+      const pet = PETS_DATA[key];
+      const owned = state.pets[key].owned;
+      
+      const div = document.createElement('div');
+      div.className = 'shopItem';
+      div.innerHTML = `
+        <div class="itemInfo">
+          <div class="itemName">${pet.icon} ${pet.name}</div>
+          <div class="itemDesc">${pet.desc}</div>
+        </div>
+        <button class="buyBtn ${owned ? 'owned' : (state.money < pet.cost ? 'locked' : '')}" 
+                onclick="buyPet('${key}')">
+          ${owned ? 'Posiadasz' : '$' + formatNum(pet.cost)}
+        </button>
+      `;
+      container.appendChild(div);
+    }
+  }
+  
+  else if (currentTab === 'backgrounds') {
+    for (let key in BGS_DATA) {
+      const bg = BGS_DATA[key];
+      const owned = state.backgrounds[key].owned;
+      const isActive = state.currentBg === key;
+      
+      let btnText = "$" + formatNum(bg.cost);
+      let btnClass = "";
+      let action = `buyBg('${key}')`;
+
+      if (owned) {
+        if (isActive) {
+          btnText = "Aktywne";
+          btnClass = "owned";
+        } else {
+          btnText = "Wybierz";
+          action = `selectBg('${key}')`;
+        }
+      } else if (state.money < bg.cost) {
+        btnClass = "locked";
+      }
+
+      const div = document.createElement('div');
+      div.className = 'shopItem';
+      div.innerHTML = `
+        <div class="itemInfo">
+          <div class="itemName">${bg.name}</div>
+          <div class="itemBonus">Bonus: +${bg.mult*100}%</div>
+        </div>
+        <button class="buyBtn ${btnClass}" onclick="${action}">${btnText}</button>
+      `;
+      container.appendChild(div);
+    }
+  }
+}
+
+/* --- AKCJE ZAKUPU --- */
+
+function buyUpgrade(key) {
+  const upg = state.upgrades[key];
+  const cost = Math.floor(upg.baseCost * Math.pow(upg.costMult, upg.level));
+  if (state.money >= cost) {
+    state.money -= cost;
+    upg.level++;
+    saveState();
+    updateUI();
+  }
+}
+
+function buyPet(key) {
+  if (state.pets[key].owned) return; // Zabezpieczenie
+  const cost = PETS_DATA[key].cost;
+  if (state.money >= cost) {
+    state.money -= cost;
+    state.pets[key].owned = true;
+    renderPets();
+    saveState();
+    updateUI();
+    showToast("Kupiono nowego peta!");
+  }
+}
+
+function buyBg(key) {
+  if (state.backgrounds[key].owned) return;
+  const cost = BGS_DATA[key].cost;
+  if (state.money >= cost) {
+    state.money -= cost;
+    state.backgrounds[key].owned = true;
+    selectBg(key); // Automatycznie wybierz po kupnie
+    saveState();
+    updateUI();
+  }
+}
+
+function selectBg(key) {
+  if (!state.backgrounds[key].owned) return;
+  state.currentBg = key;
+  applyBackground();
+  saveState();
+  updateUI();
+}
+
+/* --- FUNKCJE POMOCNICZE --- */
+
+function renderPets() {
+  const container = document.getElementById('petsContainer');
+  container.innerHTML = "";
+  let anyPet = false;
+  
+  for(let key in state.pets) {
+    if(state.pets[key].owned) {
+      anyPet = true;
+      const p = PETS_DATA[key];
+      const div = document.createElement('div');
+      div.className = 'petDisplay';
+      div.innerHTML = `<div class="petIcon">${p.icon}</div><div class="petName">${p.name}</div>`;
+      container.appendChild(div);
+    }
+  }
+  
+  if(!anyPet) container.innerHTML = '<div style="color:rgba(255,255,255,0.1); font-style:italic;">Brak aktywnych petów...</div>';
+}
+
+function applyBackground() {
+  const bgData = BGS_DATA[state.currentBg];
+  if(bgData.css.includes('url')) {
+    document.body.style.backgroundImage = bgData.css;
+    document.body.style.backgroundColor = '#000';
+  } else {
+    document.body.style.backgroundImage = 'none';
+    document.body.style.backgroundColor = bgData.css;
+  }
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.innerText = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+/* --- SAVE / LOAD SYSTEM --- */
+function saveState() {
+  localStorage.setItem(STATE_KEY, JSON.stringify(state));
+}
+
+function loadState() {
+  const saved = localStorage.getItem(STATE_KEY);
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+      // Scalanie ze stanem domyślnym na wypadek nowych pól
+      state = { ...state, ...parsed };
+      // Głębokie scalanie dla obiektów (żeby nie nadpisać nowych upgradów starymi nullami jeśli zmienimy strukturę)
+      if(parsed.upgrades) {
+         for(let k in parsed.upgrades) state.upgrades[k] = {...state.upgrades[k], ...parsed.upgrades[k]};
+      }
+      if(parsed.pets) {
+         for(let k in parsed.pets) state.pets[k] = {...state.pets[k], ...parsed.pets[k]};
+      }
+      if(parsed.backgrounds) {
+         for(let k in parsed.backgrounds) state.backgrounds[k] = {...state.backgrounds[k], ...parsed.backgrounds[k]};
+      }
+    } catch(e) { console.error("Save file corrupted"); }
+  }
+}
+
+/* --- INITIALIZATION --- */
+const btn = document.getElementById('dollarBtn');
+
+btn.addEventListener('mousedown', () => {
+  earn(getPerClick());
+  btn.classList.remove('pop');
+  void btn.offsetWidth; // trigger reflow
+  btn.classList.add('pop');
+});
+
+// Auto Clicker Loop
+setInterval(() => {
+  let a = getAuto();
+  if (a > 0) {
+    earn(a);
+    // Opcjonalnie: wizualna aktualizacja gotówki bez pełnego renderowania sklepu dla wydajności
+    document.getElementById('moneyDisplay').innerText = "$" + formatNum(state.money);
+  }
+}, 1000);
+
+// Auto Save
+setInterval(() => {
+  saveState();
+}, 10000);
+
+// Start
+loadState();
+renderPets();
+applyBackground();
+updateUI(); // Pierwsze rysowanie
+setTab('upgrades');
+
 </script>
 </body>
 </html>
