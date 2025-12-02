@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-<title>Cash Kingdom — Ostateczny FIX TŁA</title>
+<title>Cash Kingdom — Ostateczny FIX Skinów</title>
 <style>
 /* --- CONFIG --- */
 :root {
-  --bg-color: #121212;
-  --panel-bg: rgba(30, 30, 47, 0.9);
+  --bg-color: #000000; /* Użyjemy czerni, żeby kontrast był maksymalny */
+  --panel-bg: rgba(30, 30, 47, 0.95); /* Ciemniejsze panele */
   --accent: #00ff88;
   --text-main: #ffffff;
   --text-muted: #8ba0b3;
@@ -21,8 +21,8 @@ body, html {
   margin: 0; padding: 0; width: 100%; height: 100%;
   font-family: 'Segoe UI', Roboto, sans-serif;
   color: var(--text-main);
-  background: var(--bg-color) !important; /* Użycie !important nadpisuje wszystko */
-  background-image: none !important; /* Gwarancja, że nie ma obrazka w tle */
+  background: var(--bg-color) !important;
+  background-image: none !important; 
   overflow: hidden;
 }
 
@@ -159,9 +159,10 @@ body, html {
 }
 
 .tabs { display: flex; background: #151521; }
+/* Zwiększenie kontrastu aktywnej zakładki */
 .tab { flex: 1; text-align: center; padding: 15px; cursor: pointer; color: var(--text-muted); transition:0.3s; font-weight:600;}
 .tab:hover { color: #fff; }
-.tab.active { background: var(--accent); color: #000; }
+.tab.active { background: var(--accent); color: #000; font-weight: 900; } /* Zmieniono font-weight */
 
 .shop-list { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
 .shop-list::-webkit-scrollbar { width: 5px; }
@@ -210,7 +211,7 @@ body, html {
 <div class="app">
   
   <div class="header">
-    <div class="logo">👑 Cash Kingdom <span style="font-size:14px; opacity:0.6">FINAL FIX</span></div>
+    <div class="logo">👑 Cash Kingdom <span style="font-size:14px; opacity:0.6">SKIN FIX v5</span></div>
     <div style="font-size:12px; color:var(--text-muted)">Autosave: ON</div>
   </div>
 
@@ -239,9 +240,9 @@ body, html {
 
   <div class="shop-zone">
     <div class="tabs">
-      <div class="tab active" onclick="switchTab('upgrades')">Ulepszenia</div>
-      <div class="tab" onclick="switchTab('pets')">Pety</div>
-      <div class="tab" onclick="switchTab('skins')">Skiny</div>
+      <div class="tab active" onclick="switchTab('upgrades', this)">Ulepszenia</div>
+      <div class="tab" onclick="switchTab('pets', this)">Pety</div>
+      <div class="tab" onclick="switchTab('skins', this)">Skiny</div>
     </div>
     <div id="shopList" class="shop-list"></div>
   </div>
@@ -254,7 +255,7 @@ body, html {
 
 <script>
 // --- CONFIG ---
-const STATE_KEY = "ck_final_fix_v4"; // Nowy klucz, aby wymusić reset zapisu gry
+const STATE_KEY = "ck_final_skin_ok_v5"; // NOWY KLUCZ: Wymusza reset gry, ale naprawi błąd ładowania starych tablic.
 
 let game = {
   money: 0,
@@ -411,7 +412,7 @@ function renderShop() {
         action = `buySkin('${s.id}')`;
       }
 
-      if(s.id === 'default' && owned) return; 
+      if(s.id === 'default') return; 
 
       let html = `
       <div class="item">
@@ -429,10 +430,10 @@ function renderShop() {
   }
 }
 
-function switchTab(t) {
+function switchTab(t, element) {
   currentTab = t; 
   document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
-  event.target.classList.add('active');
+  element.classList.add('active'); // Używamy przekazanego elementu
   renderShop();
 }
 
@@ -554,4 +555,3 @@ load();
 </script>
 </body>
 </html>
-
