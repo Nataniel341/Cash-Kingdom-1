@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-<title>Cash Kingdom — Skin Update</title>
+<title>Cash Kingdom — Skin Update FIX</title>
 <style>
 /* --- CONFIG --- */
 :root {
   --bg-color: #121212;
-  --panel-bg: #1e1e2f;
+  --panel-bg: rgba(30, 30, 47, 0.9); /* Delikatnie przezroczyste panele */
   --accent: #00ff88;
   --text-main: #ffffff;
   --text-muted: #8ba0b3;
@@ -20,7 +20,7 @@ body, html {
   margin: 0; padding: 0; width: 100%; height: 100%;
   font-family: 'Segoe UI', Roboto, sans-serif;
   color: var(--text-main);
-  background: var(--bg-color);
+  background: var(--bg-color); /* Gwarantujemy czarne tło */
   overflow: hidden;
 }
 
@@ -30,7 +30,7 @@ body, html {
   height: 100vh;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: 1fr 400px; /* Gra | Sklep */
+  grid-template-columns: 1fr 400px;
   grid-template-rows: auto 1fr auto;
   gap: 20px;
   padding: 20px;
@@ -43,6 +43,7 @@ body, html {
   justify-content: space-between;
   align-items: center;
   background: var(--panel-bg);
+  backdrop-filter: blur(5px);
   padding: 15px 25px;
   border-radius: 16px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.3);
@@ -58,6 +59,7 @@ body, html {
 .stats-bar {
   display: flex; gap: 30px; margin-bottom: 40px;
   background: rgba(255,255,255,0.05); padding: 15px 30px; border-radius: 50px;
+  backdrop-filter: blur(5px);
 }
 .stat { text-align: center; }
 .stat-val { font-size: 26px; font-weight: 900; color: var(--accent); }
@@ -81,28 +83,30 @@ body, html {
   z-index: 2;
   transition: transform 0.1s;
   box-shadow: 0 0 30px rgba(255,255,255,0.1);
+  border: none; /* Resetujemy border */
 }
 #clickBtn:active { transform: scale(0.95); }
 #clickBtn img { width: 140px; pointer-events: none; transition: 0.3s; }
 
-/* SKIN 1: CANDY (Lizak + Różowa poświata) */
+/* SKIN 1: CANDY */
 .skin-candy #clickBtn {
-  background: radial-gradient(circle at 30% 30%, #ffccee, #ff66b2);
-  box-shadow: 0 0 50px #ff66b2, inset 0 0 20px #fff;
+  background: radial-gradient(circle at 30% 30%, #ffe0f0, #ff66b2) !important;
+  box-shadow: 0 0 50px #ff66b2, inset 0 0 20px #fff !important;
 }
-.skin-candy::before { /* Particles effect overlay */
+.skin-candy::before {
   content: ''; position: absolute; width: 120%; height: 120%;
   border-radius: 50%;
   border: 2px dashed #ff66b2;
   animation: spinSlow 10s linear infinite;
   opacity: 0.5;
+  z-index: 1;
 }
 
-/* SKIN 2: ROYAL (Złoto + Korona) */
+/* SKIN 2: ROYAL */
 .skin-royal #clickBtn {
-  background: radial-gradient(circle at 30% 30%, #fffebb, #ffcc00, #b8860b);
-  box-shadow: 0 0 60px #ffcc00, inset 0 0 30px #fff;
-  border: 4px solid #fff;
+  background: radial-gradient(circle at 30% 30%, #fffebb, #ffcc00, #b8860b) !important;
+  box-shadow: 0 0 60px #ffcc00, inset 0 0 30px #fff !important;
+  border: 4px solid #fff !important;
 }
 .skin-royal::after {
   content: ''; position: absolute; width: 115%; height: 115%;
@@ -114,11 +118,11 @@ body, html {
   z-index: 1;
 }
 
-/* SKIN 3: COSMIC (Fiolet + Pustka) */
+/* SKIN 3: COSMIC */
 .skin-cosmic #clickBtn {
-  background: radial-gradient(circle at 30% 30%, #d000ff, #4b0082, #000);
-  box-shadow: 0 0 80px #9d00ff, inset 0 0 40px #000;
-  border: 2px solid #d000ff;
+  background: radial-gradient(circle at 30% 30%, #d000ff, #4b0082, #000) !important;
+  box-shadow: 0 0 80px #9d00ff, inset 0 0 40px #000 !important;
+  border: 2px solid #d000ff !important;
 }
 .skin-cosmic::before {
   content: ''; position: absolute; width: 130%; height: 130%;
@@ -126,10 +130,11 @@ body, html {
   background: conic-gradient(from 0deg, transparent, #9d00ff, transparent);
   animation: spin 2s linear infinite;
   opacity: 0.7;
+  z-index: 1;
 }
 
 @keyframes spin { 100% { transform: rotate(360deg); } }
-@keyframes spinSlow { 100% { transform: rotate(360deg); } }
+@keyframes spinSlow { 100% { transform: rotate(-360deg); } } /* Odwrotna rotacja */
 
 /* Animacja tekstu przy kliknięciu */
 .float-text {
@@ -137,12 +142,14 @@ body, html {
   font-weight: 800; font-size: 24px; color: #fff;
   animation: floatUp 0.8s forwards;
   text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+  z-index: 10;
 }
 @keyframes floatUp { 0%{opacity:1;transform:translateY(0);} 100%{opacity:0;transform:translateY(-80px);} }
 
 /* --- SHOP ZONE (PRAWA STRONA) --- */
 .shop-zone {
   background: var(--panel-bg);
+  backdrop-filter: blur(5px);
   border-radius: 20px;
   display: flex; flex-direction: column;
   overflow: hidden;
@@ -172,14 +179,15 @@ body, html {
   color: #fff; cursor: pointer; font-weight: 700; min-width: 90px;
 }
 .buy-btn.locked { background: #333; color: #666; cursor: not-allowed; }
-.buy-btn.owned { background: #2ecc71; cursor: default; } /* Posiadane */
-.buy-btn.active-skin { background: #fff; color: #000; cursor: default; pointer-events: none; } /* Używane */
-.buy-btn.use-btn { background: #555; cursor: pointer; } /* Do założenia */
+.buy-btn.owned { background: #2ecc71; color: #fff; cursor: default; }
+.buy-btn.active-skin { background: #fff; color: #000; cursor: default; pointer-events: none; }
+.buy-btn.use-btn { background: #555; color: #fff; cursor: pointer; }
 
 /* --- PETS ZONE --- */
 .pets-zone {
   grid-column: 1 / -1;
   background: var(--panel-bg);
+  backdrop-filter: blur(5px);
   padding: 15px; border-radius: 16px;
   display: flex; gap: 15px; overflow-x: auto;
   align-items: center; min-height: 110px;
@@ -193,12 +201,6 @@ body, html {
 .pet-card img { width: 50px; }
 .pet-name { font-size: 10px; margin-top: 5px; opacity: 0.7; }
 @keyframes floatPet { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-5px);} }
-
-/* RWD */
-@media (max-width: 800px) {
-  .app { grid-template-columns: 1fr; grid-template-rows: auto auto 1fr auto; height: auto; min-height: 100vh; }
-  .shop-zone { height: 400px; }
-}
 </style>
 </head>
 <body>
@@ -206,7 +208,7 @@ body, html {
 <div class="app">
   
   <div class="header">
-    <div class="logo">👑 Cash Kingdom <span style="font-size:14px; opacity:0.6">Skin Update</span></div>
+    <div class="logo">👑 Cash Kingdom <span style="font-size:14px; opacity:0.6">Skin Update FIX</span></div>
     <div style="font-size:12px; color:var(--text-muted)">Autosave: ON</div>
   </div>
 
@@ -226,7 +228,7 @@ body, html {
       </div>
     </div>
 
-    <div id="btnWrapper" class="btn-wrapper">
+    <div id="btnWrapper" class="btn-wrapper skin-default">
       <div id="clickBtn">
         <img id="btnImg" src="https://cdn-icons-png.flaticon.com/512/9499/9499088.png" alt="Button">
       </div>
@@ -250,13 +252,13 @@ body, html {
 
 <script>
 // --- CONFIG ---
-const STATE_KEY = "ck_skin_edition_v1";
+const STATE_KEY = "ck_skin_edition_v2"; // Nowy klucz, aby wymusić reset bufora
 
 let game = {
   money: 0,
   upgrades: {},
   pets: [],
-  skins: ['default'], // Lista posiadanych skinów
+  skins: ['default'],
   activeSkin: 'default',
   startTime: Date.now()
 };
@@ -270,9 +272,9 @@ const UPGRADES = [
 ];
 
 const PETS = [
-  { id: 'p1', name: 'Szczur', cost: 1000, power: 10, icon: 'https://cdn-icons-png.flaticon.com/512/4600/4600329.png' },
-  { id: 'p2', name: 'Kot', cost: 10000, power: 50, icon: 'https://cdn-icons-png.flaticon.com/512/3468/3468377.png' },
-  { id: 'p3', name: 'Smok', cost: 500000, power: 500, icon: 'https://cdn-icons-png.flaticon.com/512/12426/12426615.png' }
+  { id: 'p1', name: 'Cyber Szczur', cost: 1000, power: 10, icon: 'https://cdn-icons-png.flaticon.com/512/4600/4600329.png' },
+  { id: 'p2', name: 'Neon Kot', cost: 10000, power: 50, icon: 'https://cdn-icons-png.flaticon.com/512/3468/3468377.png' },
+  { id: 'p3', name: 'Smok Ognia', cost: 500000, power: 500, icon: 'https://cdn-icons-png.flaticon.com/512/12426/12426615.png' }
 ];
 
 const SKINS = [
@@ -283,17 +285,17 @@ const SKINS = [
   },
   { 
     id: 'candy', name: 'Cukierkowy Świat', cost: 20000, mult: 0.25, 
-    img: 'https://cdn-icons-png.flaticon.com/512/2682/2682464.png', // Lizak
+    img: 'https://cdn-icons-png.flaticon.com/512/2682/2682464.png',
     class: 'skin-candy' 
   },
   { 
     id: 'royal', name: 'Królewski Tron', cost: 150000, mult: 0.50, 
-    img: 'https://cdn-icons-png.flaticon.com/512/892/892743.png', // Korona
+    img: 'https://cdn-icons-png.flaticon.com/512/892/892743.png',
     class: 'skin-royal' 
   },
   { 
     id: 'cosmic', name: 'Cyber Void', cost: 500000, mult: 0.75, 
-    img: 'https://cdn-icons-png.flaticon.com/512/3222/3222797.png', // Planeta/Void
+    img: 'https://cdn-icons-png.flaticon.com/512/3222/3222797.png',
     class: 'skin-cosmic' 
   }
 ];
@@ -304,7 +306,6 @@ let currentTab = 'upgrades';
 
 function getMult() {
   let m = 1.0;
-  // Szukamy aktywnego skina i dodajemy jego bonus
   let s = SKINS.find(x => x.id === game.activeSkin);
   if(s) m += s.mult;
   return m;
@@ -342,7 +343,7 @@ function updateUI() {
   document.getElementById('money').innerText = '$' + formatNum(game.money);
   document.getElementById('perClick').innerText = formatNum(getClick());
   document.getElementById('multDisplay').innerText = "x" + getMult().toFixed(2);
-  renderShop(); // Odśwież status przycisków
+  renderShop();
 }
 
 function renderShop() {
@@ -408,7 +409,6 @@ function renderShop() {
         action = `buySkin('${s.id}')`;
       }
 
-      // Ukryj domyślny w sklepie jeśli chcesz, ale tu zostawiam informacyjnie
       if(s.id === 'default' && owned) return; 
 
       let html = `
@@ -448,14 +448,19 @@ function renderPets() {
 }
 
 function applySkinVisuals() {
-  let s = SKINS.find(x => x.id === game.activeSkin);
-  if(!s) return;
-  
-  // Zmiana obrazka
-  document.getElementById('btnImg').src = s.img;
-  
-  // Zmiana klasy wrappera (particle/ramki)
   const wrapper = document.getElementById('btnWrapper');
+  const img = document.getElementById('btnImg');
+  let s = SKINS.find(x => x.id === game.activeSkin);
+  
+  if(!s) { // Fallback do domyślnego
+    s = SKINS.find(x => x.id === 'default');
+    game.activeSkin = 'default';
+  }
+
+  // 1. Zmiana obrazka
+  img.src = s.img;
+  
+  // 2. Czyszczenie starych klas i ustawienie nowej
   wrapper.className = 'btn-wrapper ' + s.class;
 }
 
@@ -486,7 +491,7 @@ function buySkin(id) {
   if(!game.skins.includes(id) && game.money >= s.cost) {
     game.money -= s.cost;
     game.skins.push(id);
-    equipSkin(id); // Automatycznie załóż po kupnie
+    equipSkin(id);
     save();
   }
 }
@@ -512,7 +517,6 @@ btn.addEventListener('mousedown', (e) => {
   let el = document.createElement('div');
   el.className = 'float-text';
   el.innerText = '+' + formatNum(val);
-  // Losowa pozycja wokół kursora dla lepszego efektu
   let rX = (Math.random() - 0.5) * 40;
   el.style.left = (e.clientX + rX) + 'px';
   el.style.top = (e.clientY - 20) + 'px';
@@ -520,6 +524,7 @@ btn.addEventListener('mousedown', (e) => {
   setTimeout(() => el.remove(), 800);
 });
 
+// Auto Loop (1 raz/sekundę)
 setInterval(() => {
   let val = getAuto();
   if(val > 0) {
@@ -535,7 +540,6 @@ function load() {
   if(d) {
     let p = JSON.parse(d);
     game = { ...game, ...p };
-    // Fix dla starych zapisów bez tablicy skinów
     if(!game.skins) game.skins = ['default'];
     if(!game.activeSkin) game.activeSkin = 'default';
   }
