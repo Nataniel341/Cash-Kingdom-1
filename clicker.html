@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Cash Kingdom — Efekty i Skiny</title>
+<title>Cash Kingdom — Efekty i Skiny + Rebirth</title>
 <style>
 :root {
   --bg-color: #000;
@@ -23,7 +23,7 @@ body, html {margin:0;padding:0;width:100%;height:100%;font-family:'Segoe UI',Rob
 .stat-val{font-size:26px;font-weight:900;color:var(--accent);}
 .stat-label{font-size:11px;color:var(--text-muted);text-transform:uppercase;}
 .btn-wrapper{position:relative;width:280px;height:280px;display:flex;align-items:center;justify-content:center;}
-#clickBtn{width:240px;height:240px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#fff,#ddd);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;z-index:2;transition:transform 0.1s;box-shadow:0 0 30px rgba(255,255,255,0.1);border:none;}
+#clickBtn{width:240px;height:240px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#fff,#ddd);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;z-index:4;transition:transform 0.1s;box-shadow:0 0 30px rgba(255,255,255,0.1);border:none;}
 #clickBtn:active{transform:scale(0.95);}
 #clickBtn img{width:140px;pointer-events:none;transition:0.3s;}
 .skin-candy #clickBtn{background:radial-gradient(circle at 30% 30%,#ffe0f0,#ff66b2) !important;box-shadow:0 0 50px #ff66b2,inset 0 0 20px #fff !important;}
@@ -60,14 +60,16 @@ body, html {margin:0;padding:0;width:100%;height:100%;font-family:'Segoe UI',Rob
 .pet-name{font-size:10px;margin-top:5px;opacity:0.7;}
 @keyframes floatPet{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
 /* Efekty cząsteczkowe */
-.effect-particle{position:absolute;width:10px;height:10px;border-radius:50%;background:#ff0;pointer-events:none;opacity:0.8;animation:particleMove 1s linear forwards;}
+.effect-particle{position:absolute;width:10px;height:10px;border-radius:50%;background:#ff0;pointer-events:none;opacity:0.8;animation:particleMove 1s linear forwards;z-index:3;}
 @keyframes particleMove{0%{transform:translate(0,0);opacity:1;}100%{transform:translate(calc(var(--x,0)*1px),calc(var(--y,0)*1px));opacity:0;}}
+/* Rebirth badge */
+.rebirth-badge{position:absolute;right:12px;top:12px;background:#222;padding:6px 10px;border-radius:10px;font-weight:800;color:var(--accent);z-index:5;border:1px solid rgba(255,255,255,0.03)}
 </style>
 </head>
 <body>
 <div class="app">
   <div class="header">
-    <div class="logo">👑 Cash Kingdom — Efekty SKIN</div>
+    <div class="logo">👑 Cash Kingdom — Efekty SKIN + Rebirth</div>
     <div style="font-size:12px;color:var(--text-muted)">Autosave: ON</div>
   </div>
 
@@ -81,6 +83,7 @@ body, html {margin:0;padding:0;width:100%;height:100%;font-family:'Segoe UI',Rob
       <div id="clickBtn">
         <img id="btnImg" src="https://cdn-icons-png.flaticon.com/512/9499/9499088.png" alt="Button">
       </div>
+      <div class="rebirth-badge" id="rebadge">RB: 0 • P: 0</div>
     </div>
   </div>
 
@@ -90,6 +93,7 @@ body, html {margin:0;padding:0;width:100%;height:100%;font-family:'Segoe UI',Rob
       <div class="tab" onclick="switchTab('pets', this)">Pety</div>
       <div class="tab" onclick="switchTab('skins', this)">Skiny</div>
       <div class="tab" onclick="switchTab('effects', this)">Efekty</div>
+      <div class="tab" onclick="switchTab('rebirth', this)">Rebirth</div>
     </div>
     <div id="shopList" class="shop-list"></div>
   </div>
@@ -98,99 +102,499 @@ body, html {margin:0;padding:0;width:100%;height:100%;font-family:'Segoe UI',Rob
 </div>
 
 <script>
-// --- CONFIG ---
-const STATE_KEY="ck_final_skin_effects";
-let game={money:0,upgrades:{},pets:[],skins:['default'],activeSkin:'default',effects:[],startTime:Date.now()};
+// --- CONFIG & STATE ---
+const STATE_KEY="ck_final_all_v1";
+let game = {
+  money:0,
+  upgrades:{},
+  pets:[],
+  skins:['default'],
+  activeSkin:'default',
+  effects:[],        // owned effects
+  activeEffect:null, // currently active effect (only visual stacking allowed? we allow multiple visual layers by storing activeEffects array behavior below)
+  activeEffects:[],  // active effects (can be many)
+  rebirthCount:0,
+  prestigePoints:0,
+  limitedRewards: {}, // id:true when claimed
+  startTime: Date.now()
+};
 
 // --- DATA ---
-const UPGRADES=[{id:'u1',name:'Mocny Palec',baseCost:15,basePow:1,type:'click',icon:'👆'},
-                {id:'u2',name:'Power Glove',baseCost:500,basePow:5,type:'click',icon:'🥊'},
-                {id:'a1',name:'Auto Bot',baseCost:200,basePow:2,type:'auto',icon:'🤖'},
-                {id:'a2',name:'Farma Krypto',baseCost:3000,basePow:15,type:'auto',icon:'🖥️'}];
+const UPGRADES = [
+  {id:'u1', name:'Mocny Palec', baseCost:15, basePow:1, type:'click', icon:'👆'},
+  {id:'u2', name:'Power Glove', baseCost:500, basePow:5, type:'click', icon:'🥊'},
+  {id:'a1', name:'Auto Bot', baseCost:200, basePow:2, type:'auto', icon:'🤖'},
+  {id:'a2', name:'Farma Krypto', baseCost:3000, basePow:15, type:'auto', icon:'🖥️'}
+];
 
-const PETS=[{id:'p1',name:'Cyber Szczur',cost:1000,power:10,icon:'https://cdn-icons-png.flaticon.com/512/4600/4600329.png'},
-            {id:'p2',name:'Neon Kot',cost:10000,power:50,icon:'https://cdn-icons-png.flaticon.com/512/3468/3468377.png'},
-            {id:'p3',name:'Smok Ognia',cost:500000,power:500,icon:'https://cdn-icons-png.flaticon.com/512/12426/12426615.png'}];
+const PETS = [
+  {id:'p1', name:'Cyber Szczur', cost:1000, power:10, icon:'https://cdn-icons-png.flaticon.com/512/4600/4600329.png'},
+  {id:'p2', name:'Neon Kot', cost:10000, power:50, icon:'https://cdn-icons-png.flaticon.com/512/3468/3468377.png'},
+  {id:'p3', name:'Smok Ognia', cost:500000, power:500, icon:'https://cdn-icons-png.flaticon.com/512/12426/12426615.png'}
+];
 
-const SKINS=[{id:'default',name:'Domyślny',cost:0,mult:0,img:'https://cdn-icons-png.flaticon.com/512/9499/9499088.png',class:''},
-            {id:'candy',name:'Cukierkowy Świat',cost:20000,mult:0.25,img:'https://cdn-icons-png.flaticon.com/512/2682/2682464.png',class:'skin-candy'},
-            {id:'royal',name:'Królewski Tron',cost:150000,mult:0.50,img:'https://cdn-icons-png.flaticon.com/512/892/892743.png',class:'skin-royal'},
-            {id:'cosmic',name:'Cyber Void',cost:500000,mult:0.75,img:'https://cdn-icons-png.flaticon.com/512/3222/3222797.png',class:'skin-cosmic'}];
+const SKINS = [
+  {id:'default', name:'Domyślny', cost:0, mult:0, img:'https://cdn-icons-png.flaticon.com/512/9499/9499088.png', class:''},
+  {id:'candy', name:'Cukierkowy Świat', cost:20000, mult:0.25, img:'https://cdn-icons-png.flaticon.com/512/2682/2682464.png', class:'skin-candy'},
+  {id:'royal', name:'Królewski Tron', cost:150000, mult:0.50, img:'https://cdn-icons-png.flaticon.com/512/892/892743.png', class:'skin-royal'},
+  {id:'cosmic', name:'Cyber Void', cost:500000, mult:0.75, img:'https://cdn-icons-png.flaticon.com/512/3222/3222797.png', class:'skin-cosmic'}
+];
 
-const EFFECTS=[
-  {id:'e1',name:'Efekt Świetlny',cost:5000,mult:0.05,color:'#ff0'},
-  {id:'e2',name:'Efekt Neonowy',cost:25000,mult:0.10,color:'#0ff'},
-  {id:'e3',name:'Efekt Kosmiczny',cost:100000,mult:0.25,color:'#f0f'}];
+const EFFECTS = [
+  {id:'e1', name:'Efekt Świetlny', cost:5000, mult:0.05, color:'#ffd700', class:'effect-sparkle'},
+  {id:'e2', name:'Efekt Neonowy', cost:25000, mult:0.10, color:'#00ffe0', class:'effect-neon'},
+  {id:'e3', name:'Efekt Kosmiczny', cost:100000, mult:0.25, color:'#ff66ff', class:'effect-cosmic'}
+];
 
-let currentTab='upgrades';
+// limited rewards for Rebirth store
+const LIMITED_REWARDS = [
+  {id:'r1', name:'Limitowany Skin: PVD', cost:5, type:'skin', grant:{skinId:'royal'}},
+  {id:'r2', name:'Limitowany Efekt: Galaktyka', cost:8, type:'effect', grant:{effectId:'e3'}},
+  {id:'r3', name:'Limitowany Pet: Legendarny', cost:10, type:'pet', grant:{petId:'p3'}}
+];
 
-// --- LOGIC ---
+// thresholds
+const REBIRTH_THRESHOLD = 500000; // require this money to allow rebirth
+const PRESTIGE_PER_100K = 1; // per 100k money on rebirth
+
+// --- HELPERS ---
+function formatNum(n){
+  if(n>=1e9) return (n/1e9).toFixed(2)+'B';
+  if(n>=1e6) return (n/1e6).toFixed(2)+'M';
+  if(n>=1000) return (n/1000).toFixed(1)+'k';
+  return Math.floor(n);
+}
+
+function save(){
+  try{
+    localStorage.setItem(STATE_KEY, JSON.stringify(game));
+  }catch(e){
+    console.error("Save failed", e);
+  }
+}
+
+let saveTimer=null;
+function saveDebounced(){ clearTimeout(saveTimer); saveTimer=setTimeout(save,400); }
+
+function load(){
+  try{
+    const raw = localStorage.getItem(STATE_KEY);
+    if(!raw) return;
+    const parsed = JSON.parse(raw);
+    // shallow merge but ensure arrays/objects exist
+    game = {...game, ...parsed};
+    if(!game.skins) game.skins=['default'];
+    if(!game.activeEffects) game.activeEffects = game.activeEffects || [];
+    if(!game.limitedRewards) game.limitedRewards = {};
+  }catch(e){
+    console.error("Load failed", e);
+  }
+}
+
+// --- CORE CALCS ---
 function getMult(){
-  let m=1.0;
-  let s=SKINS.find(x=>x.id===game.activeSkin);
-  if(s)m+=s.mult;
-  game.effects.forEach(eid=>{let e=EFFECTS.find(x=>x.id===eid);if(e)m+=e.mult;});
+  let m = 1.0;
+  const s = SKINS.find(x=>x.id===game.activeSkin);
+  if(s) m += s.mult;
+  // active effects contribute to multiplier
+  (game.activeEffects || []).forEach(eid=>{
+    const e = EFFECTS.find(x=>x.id===eid);
+    if(e) m += e.mult;
+  });
+  // rebirth bonus
+  m += (game.rebirthCount * 0.05); // each rebirth +5% base
   return m;
 }
 
 function getClick(){
-  let base=1;
-  UPGRADES.forEach(u=>{if(u.type==='click')base+=(game.upgrades[u.id]||0)*u.basePow;});
-  return Math.floor(base*getMult());
+  let base = 1;
+  UPGRADES.forEach(u=>{
+    if(u.type==='click') base += (game.upgrades[u.id]||0) * u.basePow;
+  });
+  return Math.floor(base * getMult());
 }
 
 function getAuto(){
-  let base=0;
-  UPGRADES.forEach(u=>{if(u.type==='auto')base+=(game.upgrades[u.id]||0)*u.basePow;});
-  game.pets.forEach(pid=>{let p=PETS.find(x=>x.id===pid);if(p)base+=p.power;});
-  return Math.floor(base*getMult());
+  let base = 0;
+  UPGRADES.forEach(u=>{
+    if(u.type==='auto') base += (game.upgrades[u.id]||0) * u.basePow;
+  });
+  (game.pets||[]).forEach(pid=>{
+    const p = PETS.find(x=>x.id===pid);
+    if(p) base += p.power;
+  });
+  return Math.floor(base * getMult());
 }
 
-function formatNum(n){
-  if(n>=1e6)return(n/1e6).toFixed(2)+"M";
-  if(n>=1e3)return(n/1e3).toFixed(1)+"k";
-  return Math.floor(n);
-}
-
-// --- UI ---
+// --- UI RENDER ---
 function updateUI(){
-  document.getElementById('money').innerText='$'+formatNum(game.money);
-  document.getElementById('perClick').innerText=formatNum(getClick());
-  document.getElementById('multDisplay').innerText='x'+getMult().toFixed(2);
+  document.getElementById('money').innerText = '$' + formatNum(game.money);
+  document.getElementById('perClick').innerText = formatNum(getClick());
+  document.getElementById('multDisplay').innerText = 'x' + getMult().toFixed(2);
+  document.getElementById('rebadge').innerText = `RB: ${game.rebirthCount} • P: ${game.prestigePoints}`;
   renderShop();
   renderPets();
+  applySkinVisuals();
+  applyEffectVisuals();
 }
 
 function renderShop(){
-  const list=document.getElementById('shopList');
-  list.innerHTML='';
-  if(currentTab==='upgrades'){
+  const list = document.getElementById('shopList');
+  list.innerHTML = '';
+  if(currentTab === 'upgrades'){
     UPGRADES.forEach(u=>{
-      let lvl=game.upgrades[u.id]||0;
-      let cost=Math.floor(u.baseCost*Math.pow(1.5,lvl));
-      let html=`<div class="item"><div class="item-left"><div style="font-size:24px">${u.icon}</div><div class="item-info"><h4>${u.name} <span style="opacity:0.5;font-size:12px">Lvl ${lvl}</span></h4><p>+${u.basePow} Mocy</p></div></div>
-      <button class="buy-btn ${game.money<cost?'locked':''}" onclick="buyUpgrade('${u.id}')">$${formatNum(cost)}</button></div>`;
-      list.innerHTML+=html;
+      const lvl = game.upgrades[u.id] || 0;
+      const cost = Math.floor(u.baseCost * Math.pow(1.5, lvl));
+      const disabled = game.money < cost;
+      const html = '<div class="item"><div class="item-left"><div style="font-size:24px">'+u.icon+'</div><div class="item-info"><h4>'+u.name+' <span style="opacity:0.5;font-size:12px">Lvl '+lvl+'</span></h4><p>+'+u.basePow+' Mocy</p></div></div>' +
+        '<button class="buy-btn '+(disabled?'locked':'')+'" onclick="buyUpgrade(\\''+u.id+'\\')">$'+formatNum(cost)+'</button></div>';
+      list.insertAdjacentHTML('beforeend', html);
     });
-  }else if(currentTab==='pets'){
+  } else if(currentTab === 'pets'){
     PETS.forEach(p=>{
-      let owned=game.pets.includes(p.id);
-      let html=`<div class="item"><div class="item-left"><img src="${p.icon}" style="width:32px;"><div class="item-info"><h4>${p.name}</h4><p class="bonus-text">+${p.power}/s Auto</p></div></div>
-      <button class="buy-btn ${owned?'owned':(game.money<p.cost?'locked':'')}" onclick="buyPet('${p.id}')">${owned?'Posiadasz':'$'+formatNum(p.cost)}</button></div>`;
-      list.innerHTML+=html;
+      const owned = (game.pets||[]).includes(p.id);
+      const html = '<div class="item"><div class="item-left"><img src="'+p.icon+'" style="width:32px;"><div class="item-info"><h4>'+p.name+'</h4><p class="bonus-text">+'+p.power+'/s Auto</p></div></div>' +
+        '<button class="buy-btn '+(owned?'owned':(game.money<p.cost?'locked':''))+'" onclick="buyPet(\\''+p.id+'\\')">'+(owned?'Posiadasz':'$'+formatNum(p.cost))+'</button></div>';
+      list.insertAdjacentHTML('beforeend', html);
     });
-  }else if(currentTab==='skins'){
+  } else if(currentTab === 'skins'){
     SKINS.forEach(s=>{
-      if(s.id==='default')return;
-      let owned=game.skins.includes(s.id);
-      let active=game.activeSkin===s.id;
-      let btnClass='',btnText='',action='';
-      if(active){btnClass='active-skin';btnText='Używasz';}else if(owned){btnClass='use-btn';btnText='Wybierz';action=`equipSkin('${s.id}')`; }else{btnClass=game.money<s.cost?'locked':'';btnText='$'+formatNum(s.cost);action=`buySkin('${s.id}')`;}
-      let html=`<div class="item"><div class="item-left"><img src="${s.img}" style="width:32px;filter:drop-shadow(0 0 2px #fff);"><div class="item-info"><h4>${s.name}</h4><p class="bonus-text">Mnożnik +${s.mult*100}%</p></div></div><button class="buy-btn ${btnClass}" onclick="${action}">${btnText}</button></div>`;
-      list.innerHTML+=html;
+      if(s.id === 'default') return;
+      const owned = (game.skins||[]).includes(s.id);
+      const active = game.activeSkin === s.id;
+      let btnClass='', btnText='', action='';
+      if(active){ btnClass='active-skin'; btnText='Używasz'; }
+      else if(owned){ btnClass='use-btn'; btnText='Wybierz'; action = "equipSkin('"+s.id+"')"; }
+      else { btnClass = (game.money < s.cost ? 'locked' : ''); btnText = '$' + formatNum(s.cost); action = "buySkin('"+s.id+"')"; }
+      const html = '<div class="item"><div class="item-left"><img src="'+s.img+'" style="width:32px;filter:drop-shadow(0 0 2px #fff);"><div class="item-info"><h4>'+s.name+'</h4><p class="bonus-text">Mnożnik +'+(s.mult*100)+'%</p></div></div>' +
+        '<button class="buy-btn '+btnClass+'" '+(action?('onclick="'+action+'"'):'')+'>'+btnText+'</button></div>';
+      list.insertAdjacentHTML('beforeend', html);
     });
-  }else if(currentTab==='effects'){
+  } else if(currentTab === 'effects'){
     EFFECTS.forEach(e=>{
-      let owned=game.effects.includes(e.id);
-      let html=`<div class="item"><div class="item-left"><div style="width:24px;height:24px;background:${e.color};border-radius:50%;"></div><div class="item-info"><h4>${e.name}</h4><p class="bonus-text">+${(e.mult
+      const owned = (game.effects||[]).includes(e.id);
+      const active = (game.activeEffects||[]).includes(e.id);
+      let btnClass='', btnText='', action='';
+      if(active){ btnClass='active-skin'; btnText='Aktywne'; action = "toggleEffect('"+e.id+"')"; }
+      else if(owned){ btnClass='use-btn'; btnText='Aktywuj'; action = "toggleEffect('"+e.id+"')"; }
+      else { btnClass = (game.money < e.cost ? 'locked' : ''); btnText = '$' + formatNum(e.cost); action = "buyEffect('"+e.id+"')"; }
+      const html = '<div class="item"><div class="item-left"><div style="width:24px;height:24px;background:'+e.color+';border-radius:50%;"></div><div class="item-info"><h4>'+e.name+'</h4><p class="bonus-text">+'+Math.round(e.mult*100)+'% Klik</p></div></div>' +
+        '<button class="buy-btn '+btnClass+'" onclick="'+action+'">'+btnText+'</button></div>';
+      list.insertAdjacentHTML('beforeend', html);
+    });
+  } else if(currentTab === 'rebirth'){
+    // Rebirth panel
+    const can = game.money >= REBIRTH_THRESHOLD;
+    let html = '<div class="item"><div class="item-left"><div class="item-info"><h4>Rebirth</h4><p>Wykonaj Rebirth resetując postęp, otrzymasz punkty prestiżu.</p><p class="small">Wymagane: $'+formatNum(REBIRTH_THRESHOLD)+'</p></div></div>' +
+               '<button class="buy-btn '+(can?'':'locked')+'" onclick="doRebirth()">'+(can?'Wykonaj Rebirth':'Nieosiągalne')+'</button></div>';
+    list.insertAdjacentHTML('beforeend', html);
 
+    // Show limited rewards
+    list.insertAdjacentHTML('beforeend','<hr/>');
+    LIMITED_REWARDS.forEach(r=>{
+      const claimed = !!game.limitedRewards[r.id];
+      const btnClass = claimed ? 'owned' : (game.prestigePoints < r.cost ? 'locked' : '');
+      const btnText = claimed ? 'Odebrane' : (r.cost + ' Pkt');
+      const html2 = '<div class="item"><div class="item-left"><div class="item-info"><h4>'+r.name+'</h4><p>Koszt: '+r.cost+' pkt prestiżu</p></div></div>' +
+                    '<button class="buy-btn '+btnClass+'" onclick="claimReward(\\''+r.id+'\\')">'+btnText+'</button></div>';
+      list.insertAdjacentHTML('beforeend', html2);
+    });
+
+  }
+}
+
+function switchTab(t, el){
+  currentTab = t;
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  if(el) el.classList.add('active');
+  renderShop();
+}
+
+// --- ACTIONS: buy / equip / toggle ---
+function buyUpgrade(id){
+  const u = UPGRADES.find(x=>x.id===id);
+  const lvl = game.upgrades[id] || 0;
+  const cost = Math.floor(u.baseCost * Math.pow(1.5, lvl));
+  if(game.money >= cost){
+    game.money -= cost;
+    game.upgrades[id] = lvl + 1;
+    saveDebounced();
+    updateUI();
+  } else {
+    toast("Za mało kasy!");
+  }
+}
+
+function buyPet(id){
+  const p = PETS.find(x=>x.id===id);
+  if((game.pets||[]).includes(id)) { toast("Masz już tego peta"); return; }
+  if(game.money >= p.cost){
+    game.money -= p.cost;
+    game.pets.push(id);
+    saveDebounced();
+    updateUI();
+    toast("Kupiono peta!");
+  } else toast("Za mało kasy");
+}
+
+function buySkin(id){
+  const s = SKINS.find(x=>x.id===id);
+  if((game.skins||[]).includes(id)) { toast("Masz już skin"); return; }
+  if(game.money >= s.cost){
+    game.money -= s.cost;
+    game.skins.push(id);
+    equipSkin(id);
+    saveDebounced();
+    updateUI();
+    toast("Kupiono skin!");
+  } else toast("Za mało kasy");
+}
+
+function equipSkin(id){
+  if(!(game.skins||[]).includes(id)) return;
+  game.activeSkin = id;
+  saveDebounced();
+  applySkinVisuals();
+  updateUI();
+  toast("Skin aktywowany");
+}
+
+function buyEffect(id){
+  const e = EFFECTS.find(x=>x.id===id);
+  if((game.effects||[]).includes(id)) { toast("Masz już efekt"); return; }
+  if(game.money >= e.cost){
+    game.money -= e.cost;
+    game.effects.push(id);
+    // auto-activate on buy
+    if(!game.activeEffects) game.activeEffects = [];
+    game.activeEffects.push(id);
+    saveDebounced();
+    applyEffectVisuals();
+    updateUI();
+    toast("Efekt kupiony i aktywowany");
+  } else toast("Za mało kasy");
+}
+
+function toggleEffect(id){
+  // toggle activation of an owned effect (multiple can be active)
+  if(!(game.effects||[]).includes(id)) return;
+  if(!game.activeEffects) game.activeEffects = [];
+  const idx = game.activeEffects.indexOf(id);
+  if(idx === -1){
+    game.activeEffects.push(id);
+    toast("Efekt aktywowany");
+  } else {
+    game.activeEffects.splice(idx,1);
+    toast("Efekt wyłączony");
+  }
+  saveDebounced();
+  applyEffectVisuals();
+  updateUI();
+}
+
+// --- REBIRTH SYSTEM ---
+function canRebirth(){ return game.money >= REBIRTH_THRESHOLD; }
+
+function doRebirth(){
+  if(!canRebirth()){ toast("Za mało gotówki na Rebirth"); return; }
+  // calculate prestige
+  const prestigeGain = Math.floor(game.money / 100000) * PRESTIGE_PER_100K;
+  game.prestigePoints += Math.max(1, prestigeGain); // minimum 1
+  game.rebirthCount += 1;
+  // reset progress but keep prestige, limitedRewards, claimed
+  game.money = 0;
+  game.upgrades = {};
+  game.pets = [];
+  game.skins = ['default'];
+  game.activeSkin = 'default';
+  game.effects = [];
+  game.activeEffects = [];
+  saveDebounced();
+  updateUI();
+  toast("Rebirth wykonany! Zdobyłeś " + Math.max(1, prestigeGain) + " pkt prestiżu");
+}
+
+function claimReward(id){
+  const r = LIMITED_REWARDS.find(x=>x.id===id);
+  if(!r) return;
+  if(game.limitedRewards && game.limitedRewards[id]) { toast("Nagroda już odebrana"); return; }
+  if(game.prestigePoints < r.cost){ toast("Za mało punktów prestiżu"); return; }
+  // spend
+  game.prestigePoints -= r.cost;
+  game.limitedRewards = game.limitedRewards || {};
+  game.limitedRewards[id] = true;
+  // grant reward
+  if(r.type === 'skin' && r.grant && r.grant.skinId){
+    if(!game.skins.includes(r.grant.skinId)) game.skins.push(r.grant.skinId);
+    game.activeSkin = r.grant.skinId;
+  }
+  if(r.type === 'effect' && r.grant && r.grant.effectId){
+    if(!game.effects.includes(r.grant.effectId)) game.effects.push(r.grant.effectId);
+    if(!game.activeEffects) game.activeEffects = [];
+    game.activeEffects.push(r.grant.effectId);
+  }
+  if(r.type === 'pet' && r.grant && r.grant.petId){
+    if(!game.pets.includes(r.grant.petId)) game.pets.push(r.grant.petId);
+  }
+  saveDebounced();
+  updateUI();
+  toast("Otrzymałeś nagrodę: " + r.name);
+}
+
+// --- VISUALS: skins & effects ---
+function applySkinVisuals(){
+  const wrapper = document.getElementById('btnWrapper');
+  wrapper.className = 'btn-wrapper';
+  const s = SKINS.find(x=>x.id===game.activeSkin) || SKINS[0];
+  if(s && s.class){
+    wrapper.classList.add(s.class);
+  }
+  const img = document.getElementById('btnImg');
+  img.src = s.img || SKINS[0].img;
+}
+
+function applyEffectVisuals(){
+  const wrapper = document.getElementById('btnWrapper');
+  // remove previous effect layers
+  const old = wrapper.querySelectorAll('.effect-layer-custom');
+  old.forEach(x=>x.remove());
+  // add layers for each active effect
+  (game.activeEffects||[]).forEach(eid=>{
+    const e = EFFECTS.find(x=>x.id===eid);
+    if(!e) return;
+    const div = document.createElement('div');
+    div.className = 'effect-layer-custom';
+    // style a translucent circle with effect color
+    div.style.position = 'absolute';
+    div.style.width = '110%';
+    div.style.height = '110%';
+    div.style.left = '-5%';
+    div.style.top = '-5%';
+    div.style.borderRadius = '50%';
+    div.style.pointerEvents = 'none';
+    div.style.zIndex = '2';
+    div.style.opacity = '0.5';
+    div.style.mixBlendMode = 'screen';
+    div.style.background = 'radial-gradient(circle at 30% 30%,' + e.color + '33, transparent 40%)';
+    wrapper.appendChild(div);
+  });
+}
+
+// --- PARTICLES on click depending on active effects ---
+function spawnParticles(x,y){
+  const wrapper = document.getElementById('btnWrapper');
+  const count = Math.min(18, 5 + (game.activeEffects?game.activeEffects.length*6:0));
+  for(let i=0;i<count;i++){
+    const p = document.createElement('div');
+    p.className = 'effect-particle';
+    // random direction
+    const rx = Math.round((Math.random()-0.5)*300);
+    const ry = Math.round((Math.random()-0.5)*200 - 80);
+    p.style.left = (x - 5) + 'px';
+    p.style.top = (y - 5) + 'px';
+    p.style.background = chooseParticleColor();
+    p.style.setProperty('--x', rx);
+    p.style.setProperty('--y', ry);
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(), 900);
+  }
+}
+
+function chooseParticleColor(){
+  // choose color based on active effects, fallback to gold
+  if(game.activeEffects && game.activeEffects.length>0){
+    const e = EFFECTS.find(x=>x.id===game.activeEffects[Math.floor(Math.random()*game.activeEffects.length)]);
+    if(e) return e.color;
+  }
+  return '#ffd700';
+}
+
+// --- PETS RENDER ---
+function renderPets(){
+  const zone = document.getElementById('activePets');
+  zone.innerHTML = '';
+  if(!game.pets || game.pets.length===0){
+    zone.innerHTML = '<div style="margin:auto;opacity:0.3">Brak petów</div>';
+    return;
+  }
+  game.pets.forEach(pid=>{
+    const p = PETS.find(x=>x.id===pid);
+    if(!p) return;
+    const div = document.createElement('div');
+    div.className = 'pet-card';
+    div.innerHTML = '<img src="'+p.icon+'"><div class="pet-name">'+p.name+'</div>';
+    zone.appendChild(div);
+  });
+}
+
+// --- CLICK HANDLER ---
+const clickBtn = document.getElementById('clickBtn');
+clickBtn.addEventListener('pointerdown', (e)=>{
+  const val = getClick();
+  game.money += val;
+  saveDebounced();
+  updateUI();
+
+  // float text
+  const el = document.createElement('div');
+  el.className = 'float-text';
+  el.innerText = '+' + formatNum(val);
+  el.style.left = (e.clientX - 30) + 'px';
+  el.style.top = (e.clientY - 30) + 'px';
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(), 800);
+
+  // spawn particles
+  spawnParticles(e.clientX, e.clientY);
+});
+
+// --- AUTO INCOME ---
+setInterval(()=>{
+  const val = getAuto();
+  if(val>0){
+    game.money += val;
+    saveDebounced();
+    updateUI();
+  }
+}, 1000);
+
+// --- Save/Load at start ---
+load();
+updateUI();
+
+// Autosave every 5s to be safe
+setInterval(save, 5000);
+
+// --- TOAST ---
+let toastTimer=null;
+function toast(msg){
+  let t = document.getElementById('_ck_toast');
+  if(!t){
+    t = document.createElement('div'); t.id = '_ck_toast';
+    t.style.position='fixed'; t.style.right='20px'; t.style.bottom='20px';
+    t.style.padding='10px 14px'; t.style.background='#111'; t.style.color='#fff'; t.style.borderRadius='12px'; t.style.zIndex=9999;
+    document.body.appendChild(t);
+  }
+  t.innerText = msg;
+  t.style.display = 'block';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>{ t.style.display='none'; }, 1600);
+}
+
+// --- Controls used by inline onclick strings (they are global) ---
+window.buyUpgrade = buyUpgrade;
+window.buyPet = buyPet;
+window.buySkin = buySkin;
+window.equipSkin = equipSkin;
+window.buyEffect = buyEffect;
+window.toggleEffect = toggleEffect;
+window.switchTab = function(t, el){ switchTab(t, el); };
+window.doRebirth = doRebirth;
+window.claimReward = claimReward;
+
+// ensure shop shows correct on load (default tab)
+document.addEventListener('DOMContentLoaded', ()=>{ renderShop(); applySkinVisuals(); applyEffectVisuals(); });
+
+</script>
+</body>
+</html>
