@@ -3,111 +3,62 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-<title>Cash Kingdom — Ostateczny FIX Skinów + Efekty</title>
+<title>Cash Kingdom — Skiny + Efekty</title>
 <style>
 :root {
   --bg-color: #000000;
-  --panel-bg: rgba(30, 30, 47, 0.95);
+  --panel-bg: rgba(30,30,47,0.95);
   --accent: #00ff88;
   --text-main: #ffffff;
   --text-muted: #8ba0b3;
 }
 * { box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
-body, html {
-  margin: 0; padding: 0; width: 100%; height: 100%;
-  font-family: 'Segoe UI', Roboto, sans-serif;
-  color: var(--text-main);
-  background: var(--bg-color) !important;
-  background-image: none !important; 
-  overflow: hidden;
-}
-.app {
-  max-width: 1200px;
-  height: 100vh;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr 400px;
-  grid-template-rows: auto 1fr auto;
-  gap: 20px;
-  padding: 20px;
-}
-.header {
-  grid-column: 1 / -1;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: var(--panel-bg);
-  backdrop-filter: blur(5px);
-  padding: 15px 25px;
-  border-radius: 16px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-  border: 1px solid rgba(255,255,255,0.05);
-}
-.logo { font-size: 22px; font-weight: 800; color: var(--accent); }
-.click-zone { display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
-.stats-bar { display: flex; gap: 30px; margin-bottom: 40px; background: rgba(255,255,255,0.05); padding: 15px 30px; border-radius: 50px; backdrop-filter: blur(5px); }
-.stat { text-align: center; }
-.stat-val { font-size: 26px; font-weight: 900; color: var(--accent); }
-.stat-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; }
-.btn-wrapper { position: relative; width: 280px; height: 280px; display: flex; align-items: center; justify-content: center; }
-#clickBtn {
-  width: 240px; height: 240px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 30% 30%, #fff, #ddd);
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer;
-  position: relative;
-  z-index: 2;
-  transition: transform 0.1s;
-  box-shadow: 0 0 30px rgba(255,255,255,0.1);
-  border: none;
-}
-#clickBtn:active { transform: scale(0.95); }
-#clickBtn img { width: 140px; pointer-events: none; transition: 0.3s; }
-
+body, html { margin:0; padding:0; width:100%; height:100%; font-family:'Segoe UI',Roboto,sans-serif; color:var(--text-main); background:var(--bg-color)!important; overflow:hidden; }
+.app { max-width:1200px; height:100vh; margin:0 auto; display:grid; grid-template-columns:1fr 400px; grid-template-rows:auto 1fr auto; gap:20px; padding:20px; }
+.header { grid-column:1 / -1; display:flex; justify-content:space-between; align-items:center; background:var(--panel-bg); backdrop-filter:blur(5px); padding:15px 25px; border-radius:16px; box-shadow:0 4px 15px rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.05); }
+.logo { font-size:22px; font-weight:800; color:var(--accent); }
+.click-zone { display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; }
+.stats-bar { display:flex; gap:30px; margin-bottom:40px; background:rgba(255,255,255,0.05); padding:15px 30px; border-radius:50px; backdrop-filter:blur(5px); }
+.stat { text-align:center; }
+.stat-val { font-size:26px; font-weight:900; color:var(--accent); }
+.stat-label { font-size:11px; color:var(--text-muted); text-transform:uppercase; }
+.btn-wrapper { position:relative; width:280px; height:280px; display:flex; align-items:center; justify-content:center; }
+#clickBtn { width:240px; height:240px; border-radius:50%; background:radial-gradient(circle at 30% 30%,#fff,#ddd); display:flex; align-items:center; justify-content:center; cursor:pointer; position:relative; z-index:2; transition:transform 0.1s; box-shadow:0 0 30px rgba(255,255,255,0.1); border:none; }
+#clickBtn:active { transform:scale(0.95); }
+#clickBtn img { width:140px; pointer-events:none; transition:0.3s; }
 /* EFFECTS */
-.effect-layer {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top:0; left:0;
-  pointer-events: none;
-  border-radius:50%;
-}
-.effect-sparkle { background: radial-gradient(circle,#fff0,#fff); box-shadow:0 0 10px #fff; animation:spin 2s linear infinite; opacity:0.6; }
-.effect-fire { background: radial-gradient(circle,#f00,#ff0); box-shadow:0 0 15px #f00; animation:spin 1.5s linear infinite; opacity:0.6; }
-.effect-rainbow { background: conic-gradient(red,orange,yellow,green,blue,indigo,violet); opacity:0.5; animation:spin 3s linear infinite; }
+.effect-layer { position:absolute; width:100%; height:100%; top:0; left:0; pointer-events:none; border-radius:50%; z-index:1; }
+.effect-sparkle { background:radial-gradient(circle,#fff0,#fff); box-shadow:0 0 10px #fff; animation:spin 2s linear infinite; opacity:0.6; }
+.effect-fire { background:radial-gradient(circle,#f00,#ff0); box-shadow:0 0 15px #f00; animation:spin 1.5s linear infinite; opacity:0.6; }
+.effect-rainbow { background:conic-gradient(red,orange,yellow,green,blue,indigo,violet); opacity:0.5; animation:spin 3s linear infinite; }
+@keyframes spin { 100% { transform:rotate(360deg); } }
 
-@keyframes spin { 100% { transform: rotate(360deg); } }
-
-.float-text { position: absolute; pointer-events: none; font-weight: 800; font-size: 24px; color: #fff; animation: floatUp 0.8s forwards; text-shadow: 0 2px 5px rgba(0,0,0,0.5); z-index: 10; }
+.float-text { position:absolute; pointer-events:none; font-weight:800; font-size:24px; color:#fff; animation:floatUp 0.8s forwards; text-shadow:0 2px 5px rgba(0,0,0,0.5); z-index:10; }
 @keyframes floatUp { 0%{opacity:1;transform:translateY(0);} 100%{opacity:0;transform:translateY(-80px);} }
 
-.shop-zone { background: var(--panel-bg); backdrop-filter: blur(5px); border-radius: 20px; display: flex; flex-direction: column; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); }
-.tabs { display: flex; background: #151521; }
-.tab { flex: 1; text-align: center; padding: 15px; cursor: pointer; color: var(--text-muted); transition:0.3s; font-weight:600; }
-.tab:hover { color: #fff; }
-.tab.active { background: var(--accent); color: #000; font-weight: 900; }
+.shop-zone { background:var(--panel-bg); backdrop-filter:blur(5px); border-radius:20px; display:flex; flex-direction:column; overflow:hidden; border:1px solid rgba(255,255,255,0.05); }
+.tabs { display:flex; background:#151521; }
+.tab { flex:1; text-align:center; padding:15px; cursor:pointer; color:var(--text-muted); transition:0.3s; font-weight:600; }
+.tab:hover { color:#fff; }
+.tab.active { background:var(--accent); color:#000; font-weight:900; }
+.shop-list { flex:1; overflow-y:auto; padding:15px; display:flex; flex-direction:column; gap:10px; }
+.shop-list::-webkit-scrollbar { width:5px; }
+.shop-list::-webkit-scrollbar-thumb { background:#333; border-radius:3px; }
+.item { display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.03); padding:12px; border-radius:12px; }
+.item-left { display:flex; align-items:center; gap:12px; }
+.item-info h4 { margin:0; font-size:15px; }
+.item-info p { margin:3px 0 0; font-size:12px; color:var(--text-muted); }
+.bonus-text { color:#ffd700; font-size:12px; font-weight:bold; }
+.buy-btn { background:#3a7bd5; border:none; padding:8px 15px; border-radius:8px; color:#fff; cursor:pointer; font-weight:700; min-width:90px; }
+.buy-btn.locked { background:#333; color:#666; cursor:not-allowed; }
+.buy-btn.owned { background:#2ecc71; color:#fff; cursor:default; }
+.buy-btn.active-skin { background:#fff; color:#000; cursor:default; pointer-events:none; }
+.buy-btn.use-btn { background:#555; color:#fff; cursor:pointer; }
 
-.shop-list { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
-.shop-list::-webkit-scrollbar { width: 5px; }
-.shop-list::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
-
-.item { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; }
-.item-left { display: flex; align-items: center; gap: 12px; }
-.item-info h4 { margin: 0; font-size: 15px; }
-.item-info p { margin: 3px 0 0; font-size: 12px; color: var(--text-muted); }
-.bonus-text { color: #ffd700; font-size: 12px; font-weight: bold; }
-.buy-btn { background: #3a7bd5; border: none; padding: 8px 15px; border-radius: 8px; color: #fff; cursor: pointer; font-weight: 700; min-width: 90px; }
-.buy-btn.locked { background: #333; color: #666; cursor: not-allowed; }
-.buy-btn.owned { background: #2ecc71; color: #fff; cursor: default; }
-.buy-btn.active-skin { background: #fff; color: #000; cursor: default; pointer-events: none; }
-.buy-btn.use-btn { background: #555; color: #fff; cursor: pointer; }
-
-.pets-zone { grid-column: 1 / -1; background: var(--panel-bg); backdrop-filter: blur(5px); padding: 15px; border-radius: 16px; display: flex; gap: 15px; overflow-x: auto; align-items: center; min-height: 110px; }
-.pet-card { min-width: 90px; height: 90px; background: rgba(255,255,255,0.05); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; animation: floatPet 3s ease-in-out infinite; }
-.pet-card img { width: 50px; }
-.pet-name { font-size: 10px; margin-top: 5px; opacity: 0.7; }
+.pets-zone { grid-column:1 / -1; background:var(--panel-bg); backdrop-filter:blur(5px); padding:15px; border-radius:16px; display:flex; gap:15px; overflow-x:auto; align-items:center; min-height:110px; }
+.pet-card { min-width:90px; height:90px; background:rgba(255,255,255,0.05); border-radius:12px; display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; animation:floatPet 3s ease-in-out infinite; }
+.pet-card img { width:50px; }
+.pet-name { font-size:10px; margin-top:5px; opacity:0.7; }
 @keyframes floatPet { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-5px);} }
 
 </style>
@@ -127,7 +78,9 @@ body, html {
       <div class="stat"><div class="stat-val" id="multDisplay">x1.00</div><div class="stat-label">Mnożnik</div></div>
     </div>
     <div id="btnWrapper" class="btn-wrapper skin-default">
-      <div id="clickBtn"><img id="btnImg" src="https://cdn-icons-png.flaticon.com/512/9499/9499088.png" alt="Button"></div>
+      <div id="clickBtn">
+        <img id="btnImg" src="https://cdn-icons-png.flaticon.com/512/9499/9499088.png" alt="Button">
+      </div>
     </div>
   </div>
 
@@ -148,8 +101,8 @@ body, html {
 
 <script>
 // --- CONFIG ---
-const STATE_KEY = "ck_final_skin_ok_v5_effects";
-let game = { money:0, upgrades:{}, pets:[], skins:['default'], effects:[], activeSkin:'default' };
+const STATE_KEY = "ck_final_skin_effect_v6";
+let game = { money:0, upgrades:{}, pets:[], skins:['default'], effects:[], activeSkin:'default', activeEffect:null };
 
 // --- DATA ---
 const UPGRADES = [
@@ -180,47 +133,41 @@ const EFFECTS = [
 
 let currentTab = 'upgrades';
 
-// --- LOGIC ---
+// --- UTILS ---
 function getMult() {
   let m=1.0;
-  let s=SKINS.find(x=>x.id===game.activeSkin);
-  if(s) m+=s.mult;
-  game.effects.forEach(eid=>{ let ef=EFFECTS.find(x=>x.id===eid); if(ef) m+=ef.mult; });
+  let s=SKINS.find(x=>x.id===game.activeSkin); if(s) m+=s.mult;
+  if(game.activeEffect){ let ef=EFFECTS.find(x=>x.id===game.activeEffect); if(ef) m+=ef.mult; }
   return m;
 }
 
-function getClick() {
-  let base=1;
-  UPGRADES.forEach(u=>{ if(u.type==='click') base += (game.upgrades[u.id]||0)*u.basePow; });
-  return Math.floor(base*getMult());
+function getClick() { 
+  let base=1; UPGRADES.forEach(u=>{ if(u.type==='click') base += (game.upgrades[u.id]||0)*u.basePow; }); 
+  return Math.floor(base*getMult()); 
 }
-
-function getAuto() {
-  let base=0;
-  UPGRADES.forEach(u=>{ if(u.type==='auto') base += (game.upgrades[u.id]||0)*u.basePow; });
-  game.pets.forEach(pid=>{ let p=PETS.find(x=>x.id===pid); if(p) base += p.power; });
-  return Math.floor(base*getMult());
+function getAuto() { 
+  let base=0; UPGRADES.forEach(u=>{ if(u.type==='auto') base += (game.upgrades[u.id]||0)*u.basePow; }); 
+  game.pets.forEach(pid=>{ let p=PETS.find(x=>x.id===pid); if(p) base+=p.power; }); 
+  return Math.floor(base*getMult()); 
 }
 
 function formatNum(n){ if(n>=1000000) return (n/1000000).toFixed(2)+'M'; if(n>=1000) return (n/1000).toFixed(1)+'k'; return Math.floor(n); }
 
 // --- UI ---
-function updateUI() {
-  document.getElementById('money').innerText = '$'+formatNum(game.money);
-  document.getElementById('perClick').innerText = formatNum(getClick());
-  document.getElementById('multDisplay').innerText = 'x'+getMult().toFixed(2);
-  renderShop(); renderPets(); applyEffectVisuals();
+function updateUI(){ document.getElementById('money').innerText='$'+formatNum(game.money); document.getElementById('perClick').innerText=formatNum(getClick()); document.getElementById('multDisplay').innerText='x'+getMult().toFixed(2); renderShop(); renderPets(); applyEffectVisuals(); }
+
+function renderShop(){
+  const list=document.getElementById('shopList'); list.innerHTML='';
+  if(currentTab==='upgrades'){ UPGRADES.forEach(u=>{ let lvl=game.upgrades[u.id]||0; let cost=Math.floor(u.baseCost*Math.pow(1.5,lvl)); list.innerHTML+=`<div class="item"><div class="item-left"><div style="font-size:24px">${u.icon}</div><div class="item-info"><h4>${u.name} <span style="opacity:0.5;font-size:12px">Lvl ${lvl}</span></h4><p>+${u.basePow} Mocy</p></div></div><button class="buy-btn ${game.money<cost?'locked':''}" onclick="buyUpgrade('${u.id}')">$${formatNum(cost)}</button></div>`; }); }
+  else if(currentTab==='pets'){ PETS.forEach(p=>{ let owned=game.pets.includes(p.id); list.innerHTML+=`<div class="item"><div class="item-left"><img src="${p.icon}" style="width:32px;"><div class="item-info"><h4>${p.name}</h4><p class="bonus-text">+${p.power}/s Auto</p></div></div><button class="buy-btn ${owned?'owned':(game.money<p.cost?'locked':'')}" onclick="buyPet('${p.id}')">${owned?'Posiadasz':'$'+formatNum(p.cost)}</button></div>`; }); }
+  else if(currentTab==='skins'){ SKINS.forEach(s=>{ if(s.id==='default') return; let owned=game.skins.includes(s.id); let active=game.activeSkin===s.id; let btnClass=''; let btnText=''; let action=''; if(active){ btnClass='active-skin'; btnText='Używasz'; } else if(owned){ btnClass='use-btn'; btnText='Wybierz'; action=`equipSkin('${s.id}')`; } else{ btnClass=game.money<s.cost?'locked':''; btnText='$'+formatNum(s.cost); action=`buySkin('${s.id}')`; } list.innerHTML+=`<div class="item"><div class="item-left"><img src="${s.img}" style="width:32px;filter:drop-shadow(0 0 2px #fff);"><div class="item-info"><h4>${s.name}</h4><p class="bonus-text">Mnożnik +${s.mult*100}%</p></div></div><button class="buy-btn ${btnClass}" onclick="${action}">${btnText}</button></div>`; }); }
+  else if(currentTab==='effects'){ EFFECTS.forEach(e=>{ let owned=game.effects.includes(e.id); list.innerHTML+=`<div class="item"><div class="item-left"><div style="width:32px;height:32px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;">✨</div><div class="item-info"><h4>${e.name}</h4><p class="bonus-text">+${e.mult*100}% Klik</p></div></div><button class="buy-btn ${owned?'owned':(game.money<e.cost?'locked':'')}" onclick="buyEffect('${e.id}')">${owned?'Posiadasz':'$'+formatNum(e.cost)}</button></div>`; }); }
 }
 
-function renderShop() {
-  const list = document.getElementById('shopList'); list.innerHTML='';
-  if(currentTab==='upgrades'){ UPGRADES.forEach(u=>{
-    let lvl=game.upgrades[u.id]||0; let cost=Math.floor(u.baseCost*Math.pow(1.5,lvl));
-    list.innerHTML += `<div class="item"><div class="item-left"><div style="font-size:24px">${u.icon}</div><div class="item-info"><h4>${u.name} <span style="opacity:0.5; font-size:12px">Lvl ${lvl}</span></h4><p>+${u.basePow} Mocy</p></div></div><button class="buy-btn ${game.money<cost?'locked':''}" onclick="buyUpgrade('${u.id}')">$${formatNum(cost)}</button></div>`;
-  }); }
-  else if(currentTab==='pets'){ PETS.forEach(p=>{ let owned=game.pets.includes(p.id); list.innerHTML += `<div class="item"><div class="item-left"><img src="${p.icon}" style="width:32px;"><div class="item-info"><h4>${p.name}</h4><p class="bonus-text">+${p.power}/s Auto</p></div></div><button class="buy-btn ${owned?'owned':(game.money<p.cost?'locked':'')}" onclick="buyPet('${p.id}')">${owned?'Posiadasz':'$'+formatNum(p.cost)}</button></div>`; }); }
-  else if(currentTab==='skins'){ SKINS.forEach(s=>{ if(s.id==='default') return; let owned=game.skins.includes(s.id); let active=game.activeSkin===s.id; let btnClass=''; let btnText=''; let action=''; if(active){ btnClass='active-skin'; btnText='Używasz'; } else if(owned){ btnClass='use-btn'; btnText='Wybierz'; action=`equipSkin('${s.id}')`; } else{ btnClass=game.money<s.cost?'locked':''; btnText='$'+formatNum(s.cost); action=`buySkin('${s.id}')`; } list.innerHTML += `<div class="item"><div class="item-left"><img src="${s.img}" style="width:32px; filter:drop-shadow(0 0 2px #fff);"><div class="item-info"><h4>${s.name}</h4><p class="bonus-text">Mnożnik +${s.mult*100}%</p></div></div><button class="buy-btn ${btnClass}" onclick="${action}">${btnText}</button></div>`; }); }
-  else if(currentTab==='effects'){ EFFECTS.forEach(e=>{ let owned=game.effects.includes(e.id); list.innerHTML += `<div class="item"><div class="item-left"><div style="width:32px; height:32px; background:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center;">✨</div><div class="item-info"><h4>${e.name}</h4><p class="bonus-text">+${e.mult*100}% Klik</p></div></div><button class="buy-btn ${owned?'owned':(game.money<e.cost?'locked':'')}" onclick="buyEffect('${e.id}')">${owned?'Posiadasz':'$'+formatNum(e.cost)}</button></div>`; }); }
-}
+function switchTab(t,el){ currentTab=t; document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active')); el.classList.add('active'); renderShop(); }
 
-function switchTab(t,el){ currentTab=t; document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active')); el.classList.add('
+function renderPets(){ const zone=document.getElementById('activePets'); if(game.pets.length===0){ zone.innerHTML='<div style="margin:auto;opacity:0.3">Brak petów</div>'; return; } zone.innerHTML=''; game.pets.forEach(pid=>{ let p=PETS.find(x=>x.id===pid); let div=document.createElement('div'); div.className='pet-card'; div.innerHTML=`<img src="${p.icon}"><div class="pet-name">${p.name}</div>`; zone.appendChild(div); }); }
+
+function applySkinVisuals(){ const wrapper=document.getElementById('btnWrapper'); const img=document.getElementById('btn
+erySelectorAll('.tab').forEach(x=>x.classList.remove('active')); el.classList.add('
+
