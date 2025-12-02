@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-<title>Cash Kingdom — Skin Update FIX</title>
+<title>Cash Kingdom — Ostateczny FIX TŁA</title>
 <style>
 /* --- CONFIG --- */
 :root {
   --bg-color: #121212;
-  --panel-bg: rgba(30, 30, 47, 0.9); /* Delikatnie przezroczyste panele */
+  --panel-bg: rgba(30, 30, 47, 0.9);
   --accent: #00ff88;
   --text-main: #ffffff;
   --text-muted: #8ba0b3;
@@ -16,11 +16,13 @@
 
 * { box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
 
+/* KRYTYCZNY FIX TŁA: Wymuszenie usunięcia WSZYSTKICH obrazków tła */
 body, html {
   margin: 0; padding: 0; width: 100%; height: 100%;
   font-family: 'Segoe UI', Roboto, sans-serif;
   color: var(--text-main);
-  background: var(--bg-color); /* Gwarantujemy czarne tło */
+  background: var(--bg-color) !important; /* Użycie !important nadpisuje wszystko */
+  background-image: none !important; /* Gwarancja, że nie ma obrazka w tle */
   overflow: hidden;
 }
 
@@ -51,7 +53,7 @@ body, html {
 }
 .logo { font-size: 22px; font-weight: 800; color: var(--accent); }
 
-/* --- CLICK ZONE (LEWA STRONA) --- */
+/* --- CLICK ZONE --- */
 .click-zone {
   display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative;
 }
@@ -83,7 +85,7 @@ body, html {
   z-index: 2;
   transition: transform 0.1s;
   box-shadow: 0 0 30px rgba(255,255,255,0.1);
-  border: none; /* Resetujemy border */
+  border: none;
 }
 #clickBtn:active { transform: scale(0.95); }
 #clickBtn img { width: 140px; pointer-events: none; transition: 0.3s; }
@@ -134,7 +136,7 @@ body, html {
 }
 
 @keyframes spin { 100% { transform: rotate(360deg); } }
-@keyframes spinSlow { 100% { transform: rotate(-360deg); } } /* Odwrotna rotacja */
+@keyframes spinSlow { 100% { transform: rotate(-360deg); } }
 
 /* Animacja tekstu przy kliknięciu */
 .float-text {
@@ -146,7 +148,7 @@ body, html {
 }
 @keyframes floatUp { 0%{opacity:1;transform:translateY(0);} 100%{opacity:0;transform:translateY(-80px);} }
 
-/* --- SHOP ZONE (PRAWA STRONA) --- */
+/* --- SHOP ZONE --- */
 .shop-zone {
   background: var(--panel-bg);
   backdrop-filter: blur(5px);
@@ -208,7 +210,7 @@ body, html {
 <div class="app">
   
   <div class="header">
-    <div class="logo">👑 Cash Kingdom <span style="font-size:14px; opacity:0.6">Skin Update FIX</span></div>
+    <div class="logo">👑 Cash Kingdom <span style="font-size:14px; opacity:0.6">FINAL FIX</span></div>
     <div style="font-size:12px; color:var(--text-muted)">Autosave: ON</div>
   </div>
 
@@ -252,7 +254,7 @@ body, html {
 
 <script>
 // --- CONFIG ---
-const STATE_KEY = "ck_skin_edition_v2"; // Nowy klucz, aby wymusić reset bufora
+const STATE_KEY = "ck_final_fix_v4"; // Nowy klucz, aby wymusić reset zapisu gry
 
 let game = {
   money: 0,
@@ -452,7 +454,7 @@ function applySkinVisuals() {
   const img = document.getElementById('btnImg');
   let s = SKINS.find(x => x.id === game.activeSkin);
   
-  if(!s) { // Fallback do domyślnego
+  if(!s) { 
     s = SKINS.find(x => x.id === 'default');
     game.activeSkin = 'default';
   }
@@ -552,3 +554,4 @@ load();
 </script>
 </body>
 </html>
+
